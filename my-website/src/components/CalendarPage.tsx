@@ -7,7 +7,12 @@ const MONTH_NAMES = [
   'January','February','March','April','May','June',
   'July','August','September','October','November','December',
 ];
-const TIME_SLOTS = ['9:00 AM', '10:00 AM', '11:00 AM', '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'];
+
+const PLANNER_HOURS = [
+  '7:00 AM','8:00 AM','9:00 AM','10:00 AM','11:00 AM','12:00 PM',
+  '1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM',
+  '7:00 PM','8:00 PM',
+];
 
 function toDateStr(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -21,13 +26,14 @@ interface ModalState {
   message: string;
 }
 
-const EMPTY_MODAL: ModalState = { date: '', name: '', email: '', timeSlot: TIME_SLOTS[0], message: '' };
+const EMPTY_MODAL: ModalState = { date: '', name: '', email: '', timeSlot: PLANNER_HOURS[2], message: '' };
 
 function CalendarPage() {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
   const [events, setEvents] = useState<ScheduledEvent[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Partial<ModalState>>({});
@@ -41,23 +47,33 @@ function CalendarPage() {
   ];
   while (cells.length % 7 !== 0) cells.push(null);
 
-  const bookedDates = new Set(events.map((e) => e.date));
   const todayStr = toDateStr(today.getFullYear(), today.getMonth(), today.getDate());
+
+  // Events grouped by date
+  const eventsByDate = events.reduce<Record<string, ScheduledEvent[]>>((acc, ev) => {
+    (acc[ev.date] ??= []).push(ev);
+    return acc;
+  }, {});
 
   function prevMonth() {
     if (viewMonth === 0) { setViewMonth(11); setViewYear((y) => y - 1); }
     else setViewMonth((m) => m - 1);
+    setSelectedDate(null);
   }
   function nextMonth() {
     if (viewMonth === 11) { setViewMonth(0); setViewYear((y) => y + 1); }
     else setViewMonth((m) => m + 1);
+    setSelectedDate(null);
   }
 
-  function openModal(day: number) {
+  function selectDate(day: number) {
     const dateStr = toDateStr(viewYear, viewMonth, day);
-    const isPast = dateStr < todayStr;
-    if (isPast) return;
-    setModal({ ...EMPTY_MODAL, date: dateStr });
+    setSelectedDate(dateStr);
+  }
+
+  function openModalForTime(timeSlot: string) {
+    if (!selectedDate || selectedDate < todayStr) return;
+    setModal({ ...EMPTY_MODAL, date: selectedDate, timeSlot });
     setSubmitted(false);
     setErrors({});
   }
@@ -93,13 +109,23 @@ function CalendarPage() {
       })
     : '';
 
+  const selectedDateLabel = selectedDate
+    ? new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+        weekday: 'long', month: 'long', day: 'numeric',
+      })
+    : '';
+
+  const selectedDateEvents = selectedDate ? (eventsByDate[selectedDate] ?? []) : [];
+  const bookedTimesForSelected = new Set(selectedDateEvents.map((e) => e.timeSlot));
+  const isPastSelected = selectedDate ? selectedDate < todayStr : false;
+
   return (
     <div className="cal-page">
       <div className="cal-page-inner">
         <div className="cal-header">
           <h1 className="cal-page-title">Schedule a Meeting</h1>
           <p className="cal-page-subtitle">
-            Pick an available date and fill in your details — I'll get back to you to confirm.
+            Select a date to view the hourly planner, then pick a time to schedule.
           </p>
         </div>
 
@@ -127,26 +153,24 @@ function CalendarPage() {
                 const dateStr = toDateStr(viewYear, viewMonth, day);
                 const isToday = dateStr === todayStr;
                 const isPast = dateStr < todayStr;
-                const isBooked = bookedDates.has(dateStr);
-                const isWeekend = new Date(viewYear, viewMonth, day).getDay() % 6 === 0;
+                const hasEvents = !!eventsByDate[dateStr];
+                const isSelected = dateStr === selectedDate;
 
                 let cls = 'cal-cell';
+                if (isSelected) cls += ' cal-cell--selected';
                 if (isToday) cls += ' cal-cell--today';
                 if (isPast) cls += ' cal-cell--past';
-                else if (isBooked) cls += ' cal-cell--booked';
-                else if (isWeekend) cls += ' cal-cell--weekend';
                 else cls += ' cal-cell--available';
 
                 return (
                   <button
                     key={day}
                     className={cls}
-                    onClick={() => openModal(day)}
-                    disabled={isPast || isBooked || isWeekend}
+                    onClick={() => selectDate(day)}
                     aria-label={`${MONTH_NAMES[viewMonth]} ${day}`}
                   >
                     {day}
-                    {isBooked && <span className="cal-dot" />}
+                    {hasEvents && <span className="cal-dot" />}
                   </button>
                 );
               })}
@@ -154,32 +178,58 @@ function CalendarPage() {
 
             <div className="cal-legend">
               <span className="legend-item"><span className="legend-dot legend-dot--available" />Available</span>
-              <span className="legend-item"><span className="legend-dot legend-dot--booked" />Booked</span>
+              <span className="legend-item"><span className="legend-dot legend-dot--booked" />Has Events</span>
               <span className="legend-item"><span className="legend-dot legend-dot--today" />Today</span>
             </div>
           </div>
 
-          {/* Upcoming events */}
-          {events.length > 0 && (
-            <div className="cal-events">
-              <h3 className="events-title">Scheduled Meetings</h3>
-              <div className="events-list">
-                {events.map((ev) => (
-                  <div key={ev.id} className="event-item">
-                    <div className="event-date">
-                      {new Date(ev.date + 'T00:00:00').toLocaleDateString('en-US', {
-                        month: 'short', day: 'numeric',
-                      })}
-                    </div>
-                    <div className="event-details">
-                      <span className="event-name">{ev.name}</span>
-                      <span className="event-time">{ev.timeSlot}</span>
-                    </div>
-                  </div>
-                ))}
+          {/* Hourly Planner */}
+          <div className="planner-card">
+            {selectedDate ? (
+              <>
+                <div className="planner-header">
+                  <h3 className="planner-title">{selectedDateLabel}</h3>
+                  {!isPastSelected && (
+                    <span className="planner-hint">Click a time slot to schedule</span>
+                  )}
+                </div>
+                <div className="planner-hours">
+                  {PLANNER_HOURS.map((hour) => {
+                    const eventsAtHour = selectedDateEvents.filter((e) => e.timeSlot === hour);
+                    const isBooked = bookedTimesForSelected.has(hour);
+
+                    return (
+                      <div key={hour} className={`planner-row${isBooked ? ' planner-row--booked' : ''}`}>
+                        <span className="planner-time">{hour}</span>
+                        <div
+                          className={`planner-slot${isBooked ? ' planner-slot--booked' : ''}${isPastSelected ? ' planner-slot--past' : ''}`}
+                          onClick={() => !isBooked && !isPastSelected && openModalForTime(hour)}
+                          role={!isBooked && !isPastSelected ? 'button' : undefined}
+                          tabIndex={!isBooked && !isPastSelected ? 0 : undefined}
+                        >
+                          {eventsAtHour.length > 0 ? (
+                            eventsAtHour.map((ev) => (
+                              <div key={ev.id} className="planner-event">
+                                <span className="planner-event-name">{ev.name}</span>
+                                <span className="planner-event-msg">{ev.message || ev.email}</span>
+                              </div>
+                            ))
+                          ) : (
+                            !isPastSelected && <span className="planner-empty">Available</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <div className="planner-placeholder">
+                <CalendarIcon />
+                <p>Select a date to view the hourly schedule</p>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -193,7 +243,7 @@ function CalendarPage() {
 
             {submitted ? (
               <div className="modal-success">
-                <div className="success-icon">✓</div>
+                <div className="success-icon">&#10003;</div>
                 <h3>You're all set!</h3>
                 <p>
                   Meeting request received for <strong>{modalDateLabel}</strong> at{' '}
@@ -207,7 +257,7 @@ function CalendarPage() {
               <>
                 <div className="modal-header">
                   <h2 className="modal-title">Request a Meeting</h2>
-                  <p className="modal-date">{modalDateLabel}</p>
+                  <p className="modal-date">{modalDateLabel} &middot; {modal.timeSlot}</p>
                 </div>
                 <form className="modal-form" onSubmit={handleSubmit} noValidate>
                   <div className="form-row">
@@ -231,16 +281,6 @@ function CalendarPage() {
                       onChange={(e) => setModal({ ...modal, email: e.target.value })}
                     />
                     {errors.email && <span className="form-error">{errors.email}</span>}
-                  </div>
-                  <div className="form-row">
-                    <label className="form-label">Preferred Time</label>
-                    <select
-                      className="form-input"
-                      value={modal.timeSlot}
-                      onChange={(e) => setModal({ ...modal, timeSlot: e.target.value })}
-                    >
-                      {TIME_SLOTS.map((t) => <option key={t}>{t}</option>)}
-                    </select>
                   </div>
                   <div className="form-row">
                     <label className="form-label">Message (optional)</label>
@@ -286,6 +326,17 @@ function CloseIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+function CalendarIcon() {
+  return (
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-text-muted)', opacity: 0.4 }}>
+      <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+      <line x1="16" y1="2" x2="16" y2="6" />
+      <line x1="8" y1="2" x2="8" y2="6" />
+      <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
   );
 }
