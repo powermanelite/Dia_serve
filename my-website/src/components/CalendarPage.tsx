@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { ScheduledEvent } from '../types';
+import { useState, useEffect } from 'react';
+import type { ScheduledEvent, SweepingCalendarRequest } from '../types';
 import './CalendarPage.css';
 
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -18,25 +18,135 @@ function toDateStr(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
+type Recurrence = 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly';
+
+const RECURRENCE_OPTIONS: { value: Recurrence; label: string }[] = [
+  { value: 'none', label: 'Does not repeat' },
+  { value: 'daily', label: 'Every day' },
+  { value: 'weekly', label: 'Every week' },
+  { value: 'biweekly', label: 'Every 2 weeks' },
+  { value: 'monthly', label: 'Every month' },
+];
+
 interface ModalState {
   date: string;
   name: string;
   email: string;
   timeSlot: string;
   message: string;
+  recurrence: Recurrence;
+  recurrenceCount: number;
+  editingId: string | null; // non-null when editing an existing event
 }
 
-const EMPTY_MODAL: ModalState = { date: '', name: '', email: '', timeSlot: PLANNER_HOURS[2], message: '' };
+const EMPTY_MODAL: ModalState = {
+  date: '', name: '', email: '', timeSlot: PLANNER_HOURS[2],
+  message: '', recurrence: 'none', recurrenceCount: 4, editingId: null,
+};
 
-function CalendarPage() {
+const DAY_NAME_MAP: Record<string, number> = {
+  sunday: 0, monday: 1, tuesday: 2, wednesday: 3,
+  thursday: 4, friday: 5, saturday: 6,
+};
+
+function getUpcomingDatesForDay(dayName: string, weeks: number = 4): string[] {
+  const target = DAY_NAME_MAP[dayName.toLowerCase()];
+  if (target === undefined) return [];
+  const dates: string[] = [];
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  // Advance to the next occurrence
+  const diff = (target - d.getDay() + 7) % 7 || 7;
+  d.setDate(d.getDate() + diff);
+  for (let i = 0; i < weeks; i++) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    dates.push(`${y}-${m}-${day}`);
+    d.setDate(d.getDate() + 7);
+  }
+  return dates;
+}
+
+function parseTimeSlot(time?: string): string {
+  if (!time) return PLANNER_HOURS[2];
+  // Try to match the start hour to a planner slot (e.g. "8 AM - 10 AM" → "8:00 AM")
+  const match = time.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);
+  if (!match) return PLANNER_HOURS[2];
+  const hour = match[1];
+  const min = match[2] || '00';
+  const ampm = match[3].toUpperCase();
+  const candidate = `${hour}:${min} ${ampm}`;
+  return PLANNER_HOURS.find((h) => h === candidate) ?? PLANNER_HOURS[2];
+}
+
+interface CalendarPageProps {
+  events: ScheduledEvent[];
+  onEventsChange: React.Dispatch<React.SetStateAction<ScheduledEvent[]>>;
+  sweepingRequest?: SweepingCalendarRequest | null;
+  onSweepingHandled?: () => void;
+}
+
+function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandled }: CalendarPageProps) {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
-  const [events, setEvents] = useState<ScheduledEvent[]>([]);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Partial<ModalState>>({});
+  const [sweepingBanner, setSweepingBanner] = useState<string | null>(null);
+
+  // Handle incoming sweeping request from Map page
+  useEffect(() => {
+    if (!sweepingRequest) return;
+
+    const newEvents: ScheduledEvent[] = [];
+    const sides = [
+      { label: 'Odd side', side: sweepingRequest.oddSide },
+      { label: 'Even side', side: sweepingRequest.evenSide },
+    ];
+
+    for (const { label, side } of sides) {
+      if (!side?.day) continue;
+      // Handle slash-separated days like "Monday/Thursday"
+      const dayNames = side.day.split('/').map((d) => d.trim());
+      for (const dayName of dayNames) {
+        const dates = getUpcomingDatesForDay(dayName);
+        const timeSlot = parseTimeSlot(side.time ?? undefined);
+        for (const date of dates) {
+          // Skip if already scheduled
+          if (newEvents.some((e) => e.date === date && e.timeSlot === timeSlot && e.streetName === sweepingRequest.street)) continue;
+          newEvents.push({
+            id: `sweep-${sweepingRequest.street}-${label}-${date}-${Date.now()}`,
+            date,
+            name: `Street Sweeping: ${sweepingRequest.street}`,
+            email: '',
+            timeSlot,
+            message: `${label} - ${dayName} ${side.time || ''}`.trim(),
+            isSweeping: true,
+            streetName: sweepingRequest.street,
+          });
+        }
+      }
+    }
+
+    if (newEvents.length > 0) {
+      onEventsChange((prev) => {
+        // Remove existing sweeping events for this street to avoid duplicates
+        const filtered = prev.filter((e) => !(e.isSweeping && e.streetName === sweepingRequest.street));
+        return [...filtered, ...newEvents];
+      });
+      // Navigate to the first event's month
+      const firstDate = new Date(newEvents[0].date + 'T00:00:00');
+      setViewYear(firstDate.getFullYear());
+      setViewMonth(firstDate.getMonth());
+      setSelectedDate(newEvents[0].date);
+      setSweepingBanner(`Added ${newEvents.length} sweeping events for ${sweepingRequest.street} (next 4 weeks)`);
+    }
+
+    onSweepingHandled?.();
+  }, [sweepingRequest, onSweepingHandled]);
 
   // Build the calendar grid
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
@@ -78,6 +188,26 @@ function CalendarPage() {
     setErrors({});
   }
 
+  function openModalForEdit(ev: ScheduledEvent) {
+    setModal({
+      date: ev.date,
+      name: ev.name,
+      email: ev.email,
+      timeSlot: ev.timeSlot,
+      message: ev.message,
+      recurrence: 'none',
+      recurrenceCount: 4,
+      editingId: ev.id,
+    });
+    setSubmitted(false);
+    setErrors({});
+  }
+
+  function deleteEvent(id: string) {
+    onEventsChange((prev) => prev.filter((e) => e.id !== id));
+    setModal(null);
+  }
+
   function validate(): boolean {
     const e: Partial<ModalState> = {};
     if (!modal) return false;
@@ -88,18 +218,46 @@ function CalendarPage() {
     return Object.keys(e).length === 0;
   }
 
+  function getRecurringDates(startDate: string, recurrence: Recurrence, count: number): string[] {
+    if (recurrence === 'none') return [startDate];
+    const dates: string[] = [];
+    const d = new Date(startDate + 'T00:00:00');
+    for (let i = 0; i < count; i++) {
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      dates.push(`${y}-${m}-${day}`);
+      if (recurrence === 'daily') d.setDate(d.getDate() + 1);
+      else if (recurrence === 'weekly') d.setDate(d.getDate() + 7);
+      else if (recurrence === 'biweekly') d.setDate(d.getDate() + 14);
+      else if (recurrence === 'monthly') d.setMonth(d.getMonth() + 1);
+    }
+    return dates;
+  }
+
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!modal || !validate()) return;
-    const newEvent: ScheduledEvent = {
-      id: `${modal.date}-${Date.now()}`,
-      date: modal.date,
+
+    const dates = getRecurringDates(modal.date, modal.recurrence, modal.recurrenceCount);
+    const newEvents: ScheduledEvent[] = dates.map((date, i) => ({
+      id: i === 0 && modal.editingId ? modal.editingId : `${date}-${modal.timeSlot}-${Date.now()}-${Math.random()}`,
+      date,
       name: modal.name.trim(),
       email: modal.email.trim(),
       timeSlot: modal.timeSlot,
       message: modal.message.trim(),
-    };
-    setEvents((prev) => [...prev, newEvent]);
+    }));
+
+    if (modal.editingId) {
+      // Replace the original event with updated + any new recurring events
+      onEventsChange((prev) => [
+        ...prev.filter((ev) => ev.id !== modal.editingId),
+        ...newEvents,
+      ]);
+    } else {
+      onEventsChange((prev) => [...prev, ...newEvents]);
+    }
     setSubmitted(true);
   }
 
@@ -129,6 +287,13 @@ function CalendarPage() {
           </p>
         </div>
 
+        {sweepingBanner && (
+          <div className="sweep-banner">
+            <span>{sweepingBanner}</span>
+            <button className="sweep-banner-close" onClick={() => setSweepingBanner(null)}>&times;</button>
+          </div>
+        )}
+
         <div className="cal-layout">
           {/* Calendar */}
           <div className="cal-card">
@@ -153,7 +318,9 @@ function CalendarPage() {
                 const dateStr = toDateStr(viewYear, viewMonth, day);
                 const isToday = dateStr === todayStr;
                 const isPast = dateStr < todayStr;
-                const hasEvents = !!eventsByDate[dateStr];
+                const dateEvents = eventsByDate[dateStr];
+                const hasEvents = !!dateEvents;
+                const hasSweeping = dateEvents?.some((e) => e.isSweeping) ?? false;
                 const isSelected = dateStr === selectedDate;
 
                 let cls = 'cal-cell';
@@ -170,7 +337,7 @@ function CalendarPage() {
                     aria-label={`${MONTH_NAMES[viewMonth]} ${day}`}
                   >
                     {day}
-                    {hasEvents && <span className="cal-dot" />}
+                    {hasEvents && <span className={`cal-dot${hasSweeping ? ' cal-dot--sweep' : ''}`} />}
                   </button>
                 );
               })}
@@ -209,9 +376,31 @@ function CalendarPage() {
                         >
                           {eventsAtHour.length > 0 ? (
                             eventsAtHour.map((ev) => (
-                              <div key={ev.id} className="planner-event">
-                                <span className="planner-event-name">{ev.name}</span>
-                                <span className="planner-event-msg">{ev.message || ev.email}</span>
+                              <div key={ev.id} className={`planner-event${ev.isSweeping ? ' planner-event--sweep' : ''}`}>
+                                <div className="planner-event-content">
+                                  <span className="planner-event-name">{ev.name}</span>
+                                  <span className="planner-event-msg">{ev.message || ev.email}</span>
+                                </div>
+                                {!isPastSelected && (
+                                  <div className="planner-event-actions">
+                                    <button
+                                      className="planner-event-btn planner-event-btn--edit"
+                                      onClick={(e) => { e.stopPropagation(); openModalForEdit(ev); }}
+                                      aria-label="Edit event"
+                                      title="Edit"
+                                    >
+                                      <EditIcon />
+                                    </button>
+                                    <button
+                                      className="planner-event-btn planner-event-btn--delete"
+                                      onClick={(e) => { e.stopPropagation(); deleteEvent(ev.id); }}
+                                      aria-label="Delete event"
+                                      title="Delete"
+                                    >
+                                      <TrashIcon />
+                                    </button>
+                                  </div>
+                                )}
                               </div>
                             ))
                           ) : (
@@ -247,7 +436,11 @@ function CalendarPage() {
                 <h3>You're all set!</h3>
                 <p>
                   Meeting request received for <strong>{modalDateLabel}</strong> at{' '}
-                  <strong>{modal.timeSlot}</strong>. I'll confirm shortly.
+                  <strong>{modal.timeSlot}</strong>.
+                  {modal.recurrence !== 'none' && (
+                    <> Repeating {RECURRENCE_OPTIONS.find((o) => o.value === modal.recurrence)?.label.toLowerCase()} for {modal.recurrenceCount} occurrences.</>
+                  )}
+                  {' '}I'll confirm shortly.
                 </p>
                 <button className="btn-primary" onClick={() => setModal(null)}>
                   Close
@@ -256,7 +449,7 @@ function CalendarPage() {
             ) : (
               <>
                 <div className="modal-header">
-                  <h2 className="modal-title">Request a Meeting</h2>
+                  <h2 className="modal-title">{modal.editingId ? 'Edit Event' : 'Request a Meeting'}</h2>
                   <p className="modal-date">{modalDateLabel} &middot; {modal.timeSlot}</p>
                 </div>
                 <form className="modal-form" onSubmit={handleSubmit} noValidate>
@@ -292,9 +485,49 @@ function CalendarPage() {
                       rows={3}
                     />
                   </div>
+                  <div className="form-row">
+                    <label className="form-label">Repeat</label>
+                    <select
+                      className="form-input"
+                      value={modal.recurrence}
+                      onChange={(e) => setModal({ ...modal, recurrence: e.target.value as Recurrence })}
+                    >
+                      {RECURRENCE_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  {modal.recurrence !== 'none' && (
+                    <div className="form-row">
+                      <label className="form-label">Number of occurrences</label>
+                      <input
+                        className="form-input"
+                        type="number"
+                        min={2}
+                        max={52}
+                        value={modal.recurrenceCount}
+                        onChange={(e) => setModal({ ...modal, recurrenceCount: Math.max(2, Math.min(52, Number(e.target.value))) })}
+                      />
+                      <span className="form-hint">
+                        {modal.recurrence === 'daily' && `${modal.recurrenceCount} days`}
+                        {modal.recurrence === 'weekly' && `${modal.recurrenceCount} weeks`}
+                        {modal.recurrence === 'biweekly' && `${modal.recurrenceCount * 2} weeks`}
+                        {modal.recurrence === 'monthly' && `${modal.recurrenceCount} months`}
+                      </span>
+                    </div>
+                  )}
                   <button type="submit" className="btn-primary btn-full">
-                    Send Request
+                    {modal.editingId ? 'Save Changes' : 'Send Request'}
                   </button>
+                  {modal.editingId && (
+                    <button
+                      type="button"
+                      className="btn-danger btn-full"
+                      onClick={() => deleteEvent(modal.editingId!)}
+                    >
+                      Delete Event
+                    </button>
+                  )}
                 </form>
               </>
             )}
@@ -326,6 +559,24 @@ function CloseIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
       <line x1="18" y1="6" x2="6" y2="18" />
       <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
     </svg>
   );
 }

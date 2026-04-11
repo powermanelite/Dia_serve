@@ -18,7 +18,7 @@ import requests
 from bs4 import BeautifulSoup
 
 URL = "https://www.dalycity.org/460/Street-Sweeping-Schedule"
-OUTPUT_PATH = Path(__file__).resolve().parent.parent / "public" / "street_sweeping.json"
+OUTPUT_PATH = Path(__file__).resolve().parent.parent / "public" / "StreetSweeping_DalyCity.json"
 
 
 def scrape() -> list[dict]:
@@ -85,16 +85,23 @@ def parse_schedule(raw: str) -> dict | None:
         day_str = days[0]
 
     # Extract time range
-    time_pattern = r"(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm|Noon))\s*(?:-|to|and|&)\s*(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm))"
+    time_pattern = r"(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm)|Noon)\s*(?:-|to|and|&)\s*(\d{1,2}(?::\d{2})?\s*(?:AM|PM|am|pm)|Noon)"
     time_match = re.search(time_pattern, raw, re.IGNORECASE)
+
+    def _normalize_time(t: str) -> str:
+        """Convert 'Noon' to '12:00 PM' and normalize case."""
+        t = t.strip()
+        if t.upper() == "NOON":
+            return "12:00 PM"
+        return t.upper()
 
     time_str = None
     if time_match:
-        time_str = f"{time_match.group(1).strip().upper()} - {time_match.group(2).strip().upper()}"
+        time_str = f"{_normalize_time(time_match.group(1))} - {_normalize_time(time_match.group(2))}"
     elif "noon" in raw.lower():
-        noon_match = re.search(r"Noon\s*(?:-|to)\s*(\d{1,2}(?::\d{2})?\s*(?:PM|pm))", raw, re.IGNORECASE)
+        noon_match = re.search(r"Noon\s*(?:-|to|and|&)\s*(\d{1,2}(?::\d{2})?\s*(?:PM|pm))", raw, re.IGNORECASE)
         if noon_match:
-            time_str = f"12:00 PM - {noon_match.group(1).strip().upper()}"
+            time_str = f"12:00 PM - {_normalize_time(noon_match.group(1))}"
 
     # Extract side info (North/South/East/West)
     side_match = re.search(r"(North|South|East|West)\s+Side", raw, re.IGNORECASE)

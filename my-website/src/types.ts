@@ -7,4 +7,12 @@ export interface ScheduledEvent {
   email: string;
   timeSlot: string;
   message: string;
+  isSweeping?: boolean;
+  streetName?: string;
+}
+
+export interface SweepingCalendarRequest {
+  street: string;
+  oddSide: { day?: string; time?: string; raw?: string } | null;
+  evenSide: { day?: string; time?: string; raw?: string } | null;
 }

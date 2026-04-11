@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { SweepingCalendarRequest } from '../types';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './MapPage.css';
@@ -57,17 +58,41 @@ function formatSide(side: ScheduleSide | null, label: string): string {
   return `${label}: ${parts}`;
 }
 
-function MapPage() {
+function matchStreetName(geocodedName: string, streets: StreetEntry[]): StreetEntry | null {
+  const normalized = geocodedName.toLowerCase().replace(/\b(street|st|avenue|ave|boulevard|blvd|drive|dr|road|rd|lane|ln|court|ct|way|place|pl|circle|cir)\b/g, '').trim();
+
+  // Try exact match first
+  for (const entry of streets) {
+    const entryNorm = entry.street.toLowerCase().replace(/\b(street|st|avenue|ave|boulevard|blvd|drive|dr|road|rd|lane|ln|court|ct|way|place|pl|circle|cir)\b/g, '').trim();
+    if (entryNorm === normalized) return entry;
+  }
+
+  // Try partial match (geocoded name contains or is contained in entry)
+  for (const entry of streets) {
+    const entryNorm = entry.street.toLowerCase().replace(/\b(street|st|avenue|ave|boulevard|blvd|drive|dr|road|rd|lane|ln|court|ct|way|place|pl|circle|cir)\b/g, '').trim();
+    if (normalized.includes(entryNorm) || entryNorm.includes(normalized)) return entry;
+  }
+
+  return null;
+}
+
+interface MapPageProps {
+  onAddToCalendar?: (request: SweepingCalendarRequest) => void;
+}
+
+function MapPage({ onAddToCalendar }: MapPageProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
+  const droppedPinRef = useRef<L.Marker | null>(null);
   const [data, setData] = useState<SweepingData | null>(null);
   const [search, setSearch] = useState('');
   const [filterToday, setFilterToday] = useState(false);
   const [selectedStreet, setSelectedStreet] = useState<StreetEntry | null>(null);
+  const [pinStatus, setPinStatus] = useState<string | null>(null);
 
   // Fetch street sweeping data
   useEffect(() => {
-    fetch('/street_sweeping.json')
+    fetch('/StreetSweeping_DalyCity.json')
       .then((r) => r.json())
       .then((d: SweepingData) => setData(d))
       .catch((err) => console.error('Failed to load street sweeping data:', err));
@@ -75,7 +100,14 @@ function MapPage() {
 
   // Init map
   useEffect(() => {
-    if (!mapRef.current || mapInstanceRef.current) return;
+    if (!mapRef.current) return;
+
+    // Tear down existing map when data changes so click handler gets fresh closure
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
+      droppedPinRef.current = null;
+    }
 
     const map = L.map(mapRef.current, {
       center: DALY_CITY_CENTER,
@@ -94,13 +126,75 @@ function MapPage() {
 
     mapInstanceRef.current = map;
 
+    map.on('click', async (e: L.LeafletMouseEvent) => {
+      const { lat, lng } = e.latlng;
+
+      // Remove previous dropped pin
+      if (droppedPinRef.current) {
+        droppedPinRef.current.remove();
+        droppedPinRef.current = null;
+      }
+
+      // Place a new pin
+      const pin = L.marker([lat, lng], { icon: DEFAULT_ICON }).addTo(map);
+      pin.bindPopup('<em>Looking up street...</em>').openPopup();
+      droppedPinRef.current = pin;
+      setPinStatus('loading');
+
+      try {
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
+          { headers: { 'User-Agent': 'DalyCity-StreetSweeping-App' } }
+        );
+        const geo = await res.json();
+        const road = geo?.address?.road;
+
+        if (!road) {
+          pin.setPopupContent('<strong>No street found</strong><br/>Try clicking closer to a road.');
+          setPinStatus('not-found');
+          return;
+        }
+
+        // Match against sweeping data
+        const match = data ? matchStreetName(road, data.streets) : null;
+
+        if (match) {
+          const popup = `
+            <div style="min-width:200px">
+              <strong>${match.street}</strong>
+              ${match.location ? `<br/><em style="font-size:0.85em;color:#666">${match.location}</em>` : ''}
+              <hr style="margin:6px 0;border:none;border-top:1px solid #ddd"/>
+              <div style="font-size:0.85em">
+                <strong>Odd Side:</strong> ${match.odd_side ? (match.odd_side.day || match.odd_side.raw || 'N/A') + (match.odd_side.time ? ' ' + match.odd_side.time : '') : 'No sweeping'}<br/>
+                <strong>Even Side:</strong> ${match.even_side ? (match.even_side.day || match.even_side.raw || 'N/A') + (match.even_side.time ? ' ' + match.even_side.time : '') : 'No sweeping'}
+              </div>
+              ${isScheduledToday(match) ? '<div style="margin-top:6px;background:#FEF3C7;color:#92400E;padding:4px 8px;border-radius:12px;font-size:0.8em;font-weight:700;text-align:center">Sweeping today!</div>' : ''}
+            </div>
+          `;
+          pin.setPopupContent(popup);
+          setSelectedStreet(match);
+          setSearch(match.street);
+          setPinStatus('found');
+        } else {
+          pin.setPopupContent(
+            `<div><strong>${road}</strong><br/><span style="font-size:0.85em;color:#666">No sweeping data found for this street.<br/>It may not be in the Daly City schedule.</span></div>`
+          );
+          setPinStatus('no-match');
+        }
+      } catch {
+        pin.setPopupContent('<strong>Lookup failed</strong><br/>Check your internet connection.');
+        setPinStatus('error');
+      }
+    });
+
     return () => {
       if (mapInstanceRef.current) {
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
     };
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   const filteredStreets = data
     ? data.streets.filter((entry) => {
@@ -118,7 +212,7 @@ function MapPage() {
         <div className="map-header">
           <h1 className="map-title">Daly City Street Sweeping</h1>
           <p className="map-subtitle">
-            Search for your street to find the sweeping schedule.
+            Search for your street or click the map to drop a pin.
             Data sourced from{' '}
             <a href="https://www.dalycity.org/460/Street-Sweeping-Schedule" target="_blank" rel="noopener noreferrer" className="map-link">
               dalycity.org
@@ -130,6 +224,18 @@ function MapPage() {
           <div className="map-container" ref={mapRef} />
 
           <div className="map-sidebar">
+            {/* Pin status */}
+            {pinStatus && (
+              <div className={`pin-status pin-status--${pinStatus}`}>
+                {pinStatus === 'loading' && 'Looking up street...'}
+                {pinStatus === 'found' && 'Street found! Sweeping info shown below.'}
+                {pinStatus === 'no-match' && 'Street not in Daly City sweeping schedule.'}
+                {pinStatus === 'not-found' && 'No street detected. Try clicking closer to a road.'}
+                {pinStatus === 'error' && 'Lookup failed. Check your connection.'}
+                <button className="pin-status-close" onClick={() => setPinStatus(null)}>&times;</button>
+              </div>
+            )}
+
             {/* Search + filter */}
             <div className="sweep-controls">
               <input
@@ -185,6 +291,18 @@ function MapPage() {
                 </div>
                 {isScheduledToday(selectedStreet) && (
                   <div className="sweep-today-badge">Sweeping today!</div>
+                )}
+                {onAddToCalendar && (
+                  <button
+                    className="sweep-add-cal-btn"
+                    onClick={() => onAddToCalendar({
+                      street: selectedStreet.street,
+                      oddSide: selectedStreet.odd_side,
+                      evenSide: selectedStreet.even_side,
+                    })}
+                  >
+                    Add to Calendar
+                  </button>
                 )}
               </div>
             )}

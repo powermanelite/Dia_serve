@@ -296,6 +296,15 @@
   border-left: 3px solid var(--color-primary);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.planner-event-content {
+  flex: 1;
+  min-width: 0;
 }
 
 .planner-event-name {
@@ -309,6 +318,42 @@
   font-size: 0.75rem;
   color: var(--color-text-muted);
   display: block;
+}
+
+.planner-event-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.planner-event:hover .planner-event-actions {
+  opacity: 1;
+}
+
+.planner-event-btn {
+  width: 26px;
+  height: 26px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  color: var(--color-text-muted);
+  transition: background 0.15s, color 0.15s;
+}
+
+.planner-event-btn--edit:hover {
+  background: rgba(99,102,241,0.15);
+  color: var(--color-primary);
+}
+
+.planner-event-btn--delete:hover {
+  background: rgba(239,68,68,0.12);
+  color: #EF4444;
 }
 
 .planner-placeholder {
@@ -452,6 +497,20 @@
   font-weight: 500;
 }
 
+.form-hint {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+select.form-input {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+  cursor: pointer;
+}
+
 .btn-primary {
   background: var(--color-primary);
   color: #fff;
@@ -472,6 +531,24 @@
 
 .btn-full {
   width: 100%;
+}
+
+.btn-danger {
+  background: none;
+  color: #EF4444;
+  border: 1.5px solid #FECACA;
+  border-radius: var(--radius-md);
+  padding: 10px 24px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  font-family: inherit;
+}
+
+.btn-danger:hover {
+  background: #FEE2E2;
+  border-color: #EF4444;
 }
 
 /* ── Success state ── */
@@ -504,6 +581,61 @@
   color: var(--color-text-muted);
   margin-bottom: 24px;
   line-height: 1.6;
+}
+
+/* ── Sweeping banner ── */
+.sweep-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #DCFCE7;
+  color: #166534;
+  border: 1px solid #BBF7D0;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 20px;
+  animation: sweep-banner-in 0.3s ease;
+}
+
+@keyframes sweep-banner-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.sweep-banner-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #166534;
+  opacity: 0.6;
+  line-height: 1;
+}
+
+.sweep-banner-close:hover {
+  opacity: 1;
+}
+
+/* ── Sweeping event variant ── */
+.planner-event--sweep {
+  background: #FEF3C7;
+  border-left-color: #F59E0B;
+}
+
+.planner-event--sweep .planner-event-name {
+  color: #92400E;
+}
+
+.planner-event--sweep .planner-event-msg {
+  color: #A16207;
+}
+
+/* ── Sweeping dot on calendar ── */
+.cal-dot--sweep {
+  background: #F59E0B;
 }
 
 /* ── Responsive ── */

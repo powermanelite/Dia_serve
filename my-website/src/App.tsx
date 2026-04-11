@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { Tab } from './types';
+import type { Tab, ScheduledEvent, SweepingCalendarRequest } from './types';
 import Home from './components/Home';
 import CalendarPage from './components/CalendarPage';
 import MapPage from './components/MapPage';
@@ -13,6 +13,13 @@ const tabs: { id: Tab; label: string }[] = [
 
 function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
+  const [sweepingRequest, setSweepingRequest] = useState<SweepingCalendarRequest | null>(null);
+  const [events, setEvents] = useState<ScheduledEvent[]>([]);
+
+  function handleAddToCalendar(request: SweepingCalendarRequest) {
+    setSweepingRequest(request);
+    setActiveTab('calendar');
+  }
 
   return (
     <div className="app">
@@ -34,8 +41,15 @@ function App() {
 
       <main className="main-content">
         {activeTab === 'home' && <Home />}
-        {activeTab === 'calendar' && <CalendarPage />}
-        {activeTab === 'map' && <MapPage />}
+        {activeTab === 'calendar' && (
+          <CalendarPage
+            events={events}
+            onEventsChange={setEvents}
+            sweepingRequest={sweepingRequest}
+            onSweepingHandled={() => setSweepingRequest(null)}
+          />
+        )}
+        {activeTab === 'map' && <MapPage onAddToCalendar={handleAddToCalendar} />}
       </main>
     </div>
   );
