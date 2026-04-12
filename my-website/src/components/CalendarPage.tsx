@@ -14,6 +14,9 @@ const PLANNER_HOURS = [
   '7:00 PM','8:00 PM',
 ];
 
+// Must match the CSS --planner-row-height value (56px)
+const ROW_HEIGHT = 56;
+
 function toDateStr(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
@@ -33,6 +36,7 @@ interface ModalState {
   name: string;
   email: string;
   timeSlot: string;
+  endTimeSlot: string;
   message: string;
   recurrence: Recurrence;
   recurrenceCount: number;
@@ -40,7 +44,8 @@ interface ModalState {
 }
 
 const EMPTY_MODAL: ModalState = {
-  date: '', name: '', email: '', timeSlot: PLANNER_HOURS[2],
+  date: '', name: '', email: '',
+  timeSlot: PLANNER_HOURS[2], endTimeSlot: PLANNER_HOURS[3],
   message: '', recurrence: 'none', recurrenceCount: 4, editingId: null,
 };
 
@@ -80,6 +85,41 @@ function parseTimeSlot(time?: string): string {
   return PLANNER_HOURS.find((h) => h === candidate) ?? PLANNER_HOURS[2];
 }
 
+function parseEndTimeSlot(time?: string, startSlot?: string): string | undefined {
+  if (time) {
+    // Try to parse a range like "8 AM - 10 AM"
+    const rangeMatch = time.match(
+      /\d{1,2}(?::\d{2})?\s*(?:AM|PM)\s*[-–]\s*(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i,
+    );
+    if (rangeMatch) {
+      const endHour = rangeMatch[1];
+      const endMin = rangeMatch[2] || '00';
+      const endAmpm = rangeMatch[3].toUpperCase();
+      const candidate = `${endHour}:${endMin} ${endAmpm}`;
+      if (PLANNER_HOURS.includes(candidate)) return candidate;
+    }
+  }
+  // Default: 1 hour after start
+  if (startSlot) {
+    const idx = PLANNER_HOURS.indexOf(startSlot);
+    if (idx !== -1 && idx < PLANNER_HOURS.length - 1) return PLANNER_HOURS[idx + 1];
+  }
+  return undefined;
+}
+
+/** Returns every planner hour that falls within [startSlot, endSlot). */
+function getCoveredSlots(evs: import('../types').ScheduledEvent[]): Set<string> {
+  const covered = new Set<string>();
+  for (const ev of evs) {
+    const startIdx = PLANNER_HOURS.indexOf(ev.timeSlot);
+    if (startIdx === -1) continue;
+    const endIdx = ev.endTimeSlot ? PLANNER_HOURS.indexOf(ev.endTimeSlot) : startIdx + 1;
+    const actualEnd = endIdx === -1 ? PLANNER_HOURS.length : endIdx;
+    for (let i = startIdx; i < actualEnd; i++) covered.add(PLANNER_HOURS[i]);
+  }
+  return covered;
+}
+
 interface CalendarPageProps {
   events: ScheduledEvent[];
   onEventsChange: React.Dispatch<React.SetStateAction<ScheduledEvent[]>>;
@@ -114,6 +154,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       for (const dayName of dayNames) {
         const dates = getUpcomingDatesForDay(dayName);
         const timeSlot = parseTimeSlot(side.time ?? undefined);
+        const endTimeSlot = parseEndTimeSlot(side.time ?? undefined, timeSlot);
         for (const date of dates) {
           // Skip if already scheduled
           if (newEvents.some((e) => e.date === date && e.timeSlot === timeSlot && e.streetName === sweepingRequest.street)) continue;
@@ -123,6 +164,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
             name: `Street Sweeping: ${sweepingRequest.street}`,
             email: '',
             timeSlot,
+            endTimeSlot,
             message: `${label} - ${dayName} ${side.time || ''}`.trim(),
             isSweeping: true,
             streetName: sweepingRequest.street,
@@ -183,17 +225,27 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
 
   function openModalForTime(timeSlot: string) {
     if (!selectedDate || selectedDate < todayStr) return;
-    setModal({ ...EMPTY_MODAL, date: selectedDate, timeSlot });
+    const startIdx = PLANNER_HOURS.indexOf(timeSlot);
+    const endTimeSlot =
+      startIdx < PLANNER_HOURS.length - 1
+        ? PLANNER_HOURS[startIdx + 1]
+        : PLANNER_HOURS[startIdx];
+    setModal({ ...EMPTY_MODAL, date: selectedDate, timeSlot, endTimeSlot });
     setSubmitted(false);
     setErrors({});
   }
 
   function openModalForEdit(ev: ScheduledEvent) {
+    const startIdx = PLANNER_HOURS.indexOf(ev.timeSlot);
+    const defaultEnd =
+      ev.endTimeSlot ??
+      (startIdx < PLANNER_HOURS.length - 1 ? PLANNER_HOURS[startIdx + 1] : ev.timeSlot);
     setModal({
       date: ev.date,
       name: ev.name,
       email: ev.email,
       timeSlot: ev.timeSlot,
+      endTimeSlot: defaultEnd,
       message: ev.message,
       recurrence: 'none',
       recurrenceCount: 4,
@@ -246,6 +298,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       name: modal.name.trim(),
       email: modal.email.trim(),
       timeSlot: modal.timeSlot,
+      endTimeSlot: modal.endTimeSlot !== modal.timeSlot ? modal.endTimeSlot : undefined,
       message: modal.message.trim(),
     }));
 
@@ -274,7 +327,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     : '';
 
   const selectedDateEvents = selectedDate ? (eventsByDate[selectedDate] ?? []) : [];
-  const bookedTimesForSelected = new Set(selectedDateEvents.map((e) => e.timeSlot));
+  const coveredSlotsForSelected = getCoveredSlots(selectedDateEvents);
   const isPastSelected = selectedDate ? selectedDate < todayStr : false;
 
   return (
@@ -345,7 +398,6 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
 
             <div className="cal-legend">
               <span className="legend-item"><span className="legend-dot legend-dot--available" />Available</span>
-              <span className="legend-item"><span className="legend-dot legend-dot--booked" />Has Events</span>
               <span className="legend-item"><span className="legend-dot legend-dot--today" />Today</span>
             </div>
           </div>
@@ -360,56 +412,75 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                     <span className="planner-hint">Click a time slot to schedule</span>
                   )}
                 </div>
-                <div className="planner-hours">
+                <div className="planner-grid">
+                  {/* Background rows – one per hour, clickable when open */}
                   {PLANNER_HOURS.map((hour) => {
-                    const eventsAtHour = selectedDateEvents.filter((e) => e.timeSlot === hour);
-                    const isBooked = bookedTimesForSelected.has(hour);
-
+                    const isCovered = coveredSlotsForSelected.has(hour);
+                    const clickable = !isCovered && !isPastSelected;
                     return (
-                      <div key={hour} className={`planner-row${isBooked ? ' planner-row--booked' : ''}`}>
+                      <div key={hour} className="planner-bg-row">
                         <span className="planner-time">{hour}</span>
                         <div
-                          className={`planner-slot${isBooked ? ' planner-slot--booked' : ''}${isPastSelected ? ' planner-slot--past' : ''}`}
-                          onClick={() => !isBooked && !isPastSelected && openModalForTime(hour)}
-                          role={!isBooked && !isPastSelected ? 'button' : undefined}
-                          tabIndex={!isBooked && !isPastSelected ? 0 : undefined}
-                        >
-                          {eventsAtHour.length > 0 ? (
-                            eventsAtHour.map((ev) => (
-                              <div key={ev.id} className={`planner-event${ev.isSweeping ? ' planner-event--sweep' : ''}`}>
-                                <div className="planner-event-content">
-                                  <span className="planner-event-name">{ev.name}</span>
-                                  <span className="planner-event-msg">{ev.message || ev.email}</span>
-                                </div>
-                                {!isPastSelected && (
-                                  <div className="planner-event-actions">
-                                    <button
-                                      className="planner-event-btn planner-event-btn--edit"
-                                      onClick={(e) => { e.stopPropagation(); openModalForEdit(ev); }}
-                                      aria-label="Edit event"
-                                      title="Edit"
-                                    >
-                                      <EditIcon />
-                                    </button>
-                                    <button
-                                      className="planner-event-btn planner-event-btn--delete"
-                                      onClick={(e) => { e.stopPropagation(); deleteEvent(ev.id); }}
-                                      aria-label="Delete event"
-                                      title="Delete"
-                                    >
-                                      <TrashIcon />
-                                    </button>
-                                  </div>
-                                )}
-                              </div>
-                            ))
-                          ) : (
-                            !isPastSelected && <span className="planner-empty">Available</span>
-                          )}
-                        </div>
+                          className={`planner-bg-slot${isPastSelected ? ' planner-bg-slot--past' : ''}${isCovered ? ' planner-bg-slot--covered' : ''}`}
+                          onClick={() => clickable && openModalForTime(hour)}
+                          role={clickable ? 'button' : undefined}
+                          tabIndex={clickable ? 0 : undefined}
+                        />
                       </div>
                     );
                   })}
+
+                  {/* Absolute event blocks – span from start to end time */}
+                  <div className="planner-events-layer">
+                    {selectedDateEvents.map((ev) => {
+                      const startIdx = PLANNER_HOURS.indexOf(ev.timeSlot);
+                      if (startIdx === -1) return null;
+                      const rawEndIdx = ev.endTimeSlot
+                        ? PLANNER_HOURS.indexOf(ev.endTimeSlot)
+                        : startIdx + 1;
+                      const endIdx = rawEndIdx === -1 ? PLANNER_HOURS.length : rawEndIdx;
+                      const spanRows = Math.max(endIdx - startIdx, 1);
+                      const top = startIdx * ROW_HEIGHT + 2;
+                      const height = spanRows * ROW_HEIGHT - 4;
+                      const timeLabel = ev.endTimeSlot && ev.endTimeSlot !== ev.timeSlot
+                        ? `${ev.timeSlot} – ${ev.endTimeSlot}`
+                        : ev.timeSlot;
+
+                      return (
+                        <div
+                          key={ev.id}
+                          className={`planner-event${ev.isSweeping ? ' planner-event--sweep' : ''}`}
+                          style={{ top, height }}
+                        >
+                          <div className="planner-event-content">
+                            <span className="planner-event-name">{ev.name}</span>
+                            <span className="planner-event-time">{timeLabel}</span>
+                            {ev.message && <span className="planner-event-msg">{ev.message}</span>}
+                          </div>
+                          {!isPastSelected && (
+                            <div className="planner-event-actions">
+                              <button
+                                className="planner-event-btn planner-event-btn--edit"
+                                onClick={(e) => { e.stopPropagation(); openModalForEdit(ev); }}
+                                aria-label="Edit event"
+                                title="Edit"
+                              >
+                                <EditIcon />
+                              </button>
+                              <button
+                                className="planner-event-btn planner-event-btn--delete"
+                                onClick={(e) => { e.stopPropagation(); deleteEvent(ev.id); }}
+                                aria-label="Delete event"
+                                title="Delete"
+                              >
+                                <TrashIcon />
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </>
             ) : (
@@ -436,7 +507,10 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                 <h3>You're all set!</h3>
                 <p>
                   Meeting request received for <strong>{modalDateLabel}</strong> at{' '}
-                  <strong>{modal.timeSlot}</strong>.
+                  <strong>
+                    {modal.timeSlot}
+                    {modal.endTimeSlot && modal.endTimeSlot !== modal.timeSlot && ` – ${modal.endTimeSlot}`}
+                  </strong>.
                   {modal.recurrence !== 'none' && (
                     <> Repeating {RECURRENCE_OPTIONS.find((o) => o.value === modal.recurrence)?.label.toLowerCase()} for {modal.recurrenceCount} occurrences.</>
                   )}
@@ -450,7 +524,10 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
               <>
                 <div className="modal-header">
                   <h2 className="modal-title">{modal.editingId ? 'Edit Event' : 'Request a Meeting'}</h2>
-                  <p className="modal-date">{modalDateLabel} &middot; {modal.timeSlot}</p>
+                  <p className="modal-date">
+                    {modalDateLabel} &middot; {modal.timeSlot}
+                    {modal.endTimeSlot && modal.endTimeSlot !== modal.timeSlot && ` – ${modal.endTimeSlot}`}
+                  </p>
                 </div>
                 <form className="modal-form" onSubmit={handleSubmit} noValidate>
                   <div className="form-row">
@@ -485,6 +562,20 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                       rows={3}
                     />
                   </div>
+                  {PLANNER_HOURS.indexOf(modal.timeSlot) < PLANNER_HOURS.length - 1 && (
+                    <div className="form-row">
+                      <label className="form-label">End Time</label>
+                      <select
+                        className="form-input"
+                        value={modal.endTimeSlot}
+                        onChange={(e) => setModal({ ...modal, endTimeSlot: e.target.value })}
+                      >
+                        {PLANNER_HOURS.slice(PLANNER_HOURS.indexOf(modal.timeSlot) + 1).map((hour) => (
+                          <option key={hour} value={hour}>{hour}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
                   <div className="form-row">
                     <label className="form-label">Repeat</label>
                     <select

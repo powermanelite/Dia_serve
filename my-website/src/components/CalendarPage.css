@@ -188,18 +188,6 @@
 }
 
 .legend-dot--available { background: var(--color-primary); }
-.legend-dot--booked { background: var(--color-primary); position: relative; }
-.legend-dot--booked::after {
-  content: '';
-  position: absolute;
-  bottom: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--color-primary-dark);
-}
 .legend-dot--today { background: transparent; border: 2px solid var(--color-primary); }
 
 /* ── Hourly Planner ── */
@@ -233,19 +221,19 @@
   color: var(--color-text-muted);
 }
 
-.planner-hours {
-  display: flex;
-  flex-direction: column;
+/* ── Planner grid (absolute-position event layout) ── */
+.planner-grid {
+  position: relative;
 }
 
-.planner-row {
+.planner-bg-row {
   display: flex;
   align-items: stretch;
+  height: 56px; /* must match ROW_HEIGHT constant in CalendarPage.tsx */
   border-bottom: 1px solid var(--color-border);
-  min-height: 48px;
 }
 
-.planner-row:last-child {
+.planner-bg-row:last-child {
   border-bottom: none;
 }
 
@@ -255,51 +243,56 @@
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--color-text-muted);
-  padding: 10px 8px 10px 0;
+  padding: 8px 8px 0 0;
   text-align: right;
   border-right: 2px solid var(--color-border);
 }
 
-.planner-slot {
+.planner-bg-slot {
   flex: 1;
-  padding: 8px 12px;
   cursor: pointer;
   transition: background var(--transition);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-.planner-slot:hover:not(.planner-slot--booked):not(.planner-slot--past) {
+.planner-bg-slot:hover:not(.planner-bg-slot--past):not(.planner-bg-slot--covered) {
   background: var(--color-primary-light);
 }
 
-.planner-slot--booked {
-  cursor: default;
-}
-
-.planner-slot--past {
+.planner-bg-slot--past {
   cursor: default;
   opacity: 0.5;
 }
 
-.planner-empty {
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-  opacity: 0.4;
+.planner-bg-slot--covered {
+  cursor: default;
+}
+
+/* Events layer – sits above the background rows */
+.planner-events-layer {
+  position: absolute;
+  top: 0;
+  left: 74px; /* time label width + border */
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
 }
 
 .planner-event {
+  position: absolute;
+  left: 6px;
+  right: 6px;
   background: var(--color-primary-light);
   border-left: 3px solid var(--color-primary);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   padding: 6px 10px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 8px;
+  pointer-events: auto;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
 
 .planner-event-content {
@@ -312,12 +305,27 @@
   font-weight: 600;
   color: var(--color-primary-dark);
   display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.planner-event-time {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  display: block;
+  margin-top: 1px;
 }
 
 .planner-event-msg {
   font-size: 0.75rem;
   color: var(--color-text-muted);
   display: block;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .planner-event-actions {
