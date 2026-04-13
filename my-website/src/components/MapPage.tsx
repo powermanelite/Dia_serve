@@ -11,6 +11,14 @@ const shadowUrl = 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png
 
 const DEFAULT_ICON = L.icon({ iconUrl, iconRetinaUrl, shadowUrl, iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34] });
 
+const LOCATION_ICON = L.divIcon({
+  className: 'location-pin-icon',
+  html: '<div class="location-pin-dot"></div>',
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+  popupAnchor: [0, -12],
+});
+
 const DALY_CITY_CENTER: L.LatLngTuple = [37.6879, -122.4702];
 
 interface ScheduleSide {
@@ -84,11 +92,28 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const droppedPinRef = useRef<L.Marker | null>(null);
+  const lookupAndPinRef = useRef<((lat: number, lng: number, icon: L.Icon | L.DivIcon) => void) | null>(null);
   const [data, setData] = useState<SweepingData | null>(null);
   const [search, setSearch] = useState('');
   const [filterToday, setFilterToday] = useState(false);
   const [selectedStreet, setSelectedStreet] = useState<StreetEntry | null>(null);
   const [pinStatus, setPinStatus] = useState<string | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+
+  function recenterToLocation() {
+    if (!navigator.geolocation || !mapInstanceRef.current) return;
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        setIsLocating(false);
+        mapInstanceRef.current?.setView([lat, lng], 15);
+        lookupAndPinRef.current?.(lat, lng, LOCATION_ICON);
+      },
+      () => setIsLocating(false),
+      { timeout: 8000 }
+    );
+  }
 
   // Fetch street sweeping data
   useEffect(() => {
@@ -126,17 +151,13 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
 
     mapInstanceRef.current = map;
 
-    map.on('click', async (e: L.LeafletMouseEvent) => {
-      const { lat, lng } = e.latlng;
-
-      // Remove previous dropped pin
+    // Shared logic for both click-dropped pins and geolocation pin
+    async function lookupAndPin(lat: number, lng: number, icon: L.Icon | L.DivIcon) {
       if (droppedPinRef.current) {
         droppedPinRef.current.remove();
         droppedPinRef.current = null;
       }
-
-      // Place a new pin
-      const pin = L.marker([lat, lng], { icon: DEFAULT_ICON }).addTo(map);
+      const pin = L.marker([lat, lng], { icon }).addTo(map);
       pin.bindPopup('<em>Looking up street...</em>').openPopup();
       droppedPinRef.current = pin;
       setPinStatus('loading');
@@ -155,7 +176,6 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
           return;
         }
 
-        // Match against sweeping data
         const match = data ? matchStreetName(road, data.streets) : null;
 
         if (match) {
@@ -185,7 +205,27 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
         pin.setPopupContent('<strong>Lookup failed</strong><br/>Check your internet connection.');
         setPinStatus('error');
       }
+    }
+
+    lookupAndPinRef.current = lookupAndPin;
+
+    map.on('click', (e: L.LeafletMouseEvent) => {
+      lookupAndPin(e.latlng.lat, e.latlng.lng, DEFAULT_ICON);
     });
+
+    // Drop a pin on the user's current location if data is ready and permission is granted
+    if (data && navigator.geolocation) {
+      setPinStatus('locating');
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude: lat, longitude: lng } = pos.coords;
+          map.setView([lat, lng], 15);
+          lookupAndPin(lat, lng, LOCATION_ICON);
+        },
+        () => setPinStatus(null),
+        { timeout: 8000 }
+      );
+    }
 
     return () => {
       if (mapInstanceRef.current) {
@@ -221,12 +261,23 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
         </div>
 
         <div className="map-layout">
-          <div className="map-container" ref={mapRef} />
+          <div className="map-wrapper">
+            <div className="map-container" ref={mapRef} />
+            <button
+              className={`map-recenter-btn${isLocating ? ' map-recenter-btn--locating' : ''}`}
+              onClick={recenterToLocation}
+              title="Recenter on my location"
+              aria-label="Recenter on my location"
+            >
+              <LocateIcon />
+            </button>
+          </div>
 
           <div className="map-sidebar">
             {/* Pin status */}
             {pinStatus && (
               <div className={`pin-status pin-status--${pinStatus}`}>
+                {pinStatus === 'locating' && 'Detecting your location...'}
                 {pinStatus === 'loading' && 'Looking up street...'}
                 {pinStatus === 'found' && 'Street found! Sweeping info shown below.'}
                 {pinStatus === 'no-match' && 'Street not in Daly City sweeping schedule.'}
@@ -340,6 +391,18 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
         </div>
       </div>
     </div>
+  );
+}
+
+function LocateIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="3" />
+      <line x1="12" y1="2" x2="12" y2="6" />
+      <line x1="12" y1="18" x2="12" y2="22" />
+      <line x1="2" y1="12" x2="6" y2="12" />
+      <line x1="18" y1="12" x2="22" y2="12" />
+    </svg>
   );
 }
 
