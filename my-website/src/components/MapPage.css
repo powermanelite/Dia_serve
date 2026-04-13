@@ -31,6 +31,42 @@
   text-decoration: underline;
 }
 
+/* ── City toggle ── */
+.city-toggle {
+  display: inline-flex;
+  gap: 0;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin: 12px 0 8px;
+}
+
+.city-toggle-btn {
+  padding: 7px 20px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  font-family: inherit;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.city-toggle-btn + .city-toggle-btn {
+  border-left: 1.5px solid var(--color-border);
+}
+
+.city-toggle-btn--active {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.city-toggle-btn:not(.city-toggle-btn--active):hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
 /* ── Layout ── */
 .map-layout {
   display: flex;
@@ -270,6 +306,40 @@
   color: var(--color-text-muted);
   text-align: center;
   padding: 10px 0;
+}
+
+/* ── SF schedule rows ── */
+.sf-schedules {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sf-schedule-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.sf-schedule-side {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-primary-dark);
+  background: rgba(99,102,241,0.1);
+  border-radius: 4px;
+  padding: 2px 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.sf-schedule-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 /* ── Add to Calendar button ── */
