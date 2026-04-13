@@ -92,7 +92,7 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
 
   // Fetch street sweeping data
   useEffect(() => {
-    fetch('/Dia_serve/StreetSweeping_DalyCity.json')
+    fetch('./StreetSweeping_DalyCity.json')
       .then((r) => r.json())
       .then((d: SweepingData) => setData(d))
       .catch((err) => console.error('Failed to load street sweeping data:', err));
