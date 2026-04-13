@@ -1,8 +1,8 @@
 import './Home.css';
 
-const LINKEDIN_URL = 'https://www.linkedin.com/in/diamond-phu-252923172/';
+const LINKEDIN_URL = 'https://www.linkedin.com/in/diamond-phu/';
 const GITHUB_URL = 'https://github.com/powermanelite';
-const RESUME_URL = './Diamond_Phu_Resume.pdf';
+const RESUME_URL = '/Dia_serve/Diamond_Phu_Resume.pdf';
 
 const experiences = [
   {
