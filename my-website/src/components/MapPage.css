@@ -311,6 +311,12 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
+.pin-status--locating {
+  background: #F0FDF4;
+  color: #166534;
+  border: 1px solid #BBF7D0;
+}
+
 .pin-status--loading {
   background: #EFF6FF;
   color: #1D4ED8;
@@ -351,6 +357,67 @@
   opacity: 1;
 }
 
+/* ── Map wrapper + recenter button ── */
+.map-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.map-recenter-btn {
+  position: absolute;
+  top: 80px;
+  left: 10px;
+  z-index: 1000;
+  width: 36px;
+  height: 36px;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,0.2);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  transition: background 0.15s, color 0.15s;
+}
+
+.map-recenter-btn:hover {
+  background: #f4f4f4;
+  color: #3B82F6;
+}
+
+.map-recenter-btn--locating {
+  color: #3B82F6;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ── Current location pin ── */
+.location-pin-icon {
+  background: none !important;
+  border: none !important;
+}
+
+.location-pin-dot {
+  width: 16px;
+  height: 16px;
+  background: #3B82F6;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #3B82F6;
+  animation: location-pulse 2s ease-in-out infinite;
+}
+
+@keyframes location-pulse {
+  0%, 100% { box-shadow: 0 0 0 2px #3B82F6; }
+  50% { box-shadow: 0 0 0 7px rgba(59,130,246,0.25); }
+}
+
 /* ── Map click hint ── */
 .map-container {
   cursor: crosshair;
@@ -362,6 +429,7 @@
     flex-direction: column;
   }
 
+  .map-wrapper,
   .map-container {
     width: 100%;
     height: 380px;
