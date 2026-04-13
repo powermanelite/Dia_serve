@@ -41,6 +41,9 @@ interface ModalState {
   recurrence: Recurrence;
   recurrenceCount: number;
   editingId: string | null; // non-null when editing an existing event
+  isSweeping?: boolean;
+  streetName?: string;
+  stopRepeat?: boolean;
 }
 
 const EMPTY_MODAL: ModalState = {
@@ -54,16 +57,18 @@ const DAY_NAME_MAP: Record<string, number> = {
   thursday: 4, friday: 5, saturday: 6,
 };
 
-function getUpcomingDatesForDay(dayName: string, weeks: number = 4): string[] {
+function getUpcomingDatesForDayInYear(dayName: string): string[] {
   const target = DAY_NAME_MAP[dayName.toLowerCase()];
   if (target === undefined) return [];
   const dates: string[] = [];
   const d = new Date();
   d.setHours(0, 0, 0, 0);
-  // Advance to the next occurrence
-  const diff = (target - d.getDay() + 7) % 7 || 7;
+  // Advance to the next occurrence of the target day (0 = today if it matches)
+  const diff = (target - d.getDay() + 7) % 7;
   d.setDate(d.getDate() + diff);
-  for (let i = 0; i < weeks; i++) {
+  // Generate all occurrences through Dec 31 of the current year
+  const endOfYear = new Date(d.getFullYear(), 11, 31);
+  while (d <= endOfYear) {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
@@ -152,7 +157,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       // Handle slash-separated days like "Monday/Thursday"
       const dayNames = side.day.split('/').map((d) => d.trim());
       for (const dayName of dayNames) {
-        const dates = getUpcomingDatesForDay(dayName);
+        const dates = getUpcomingDatesForDayInYear(dayName);
         const timeSlot = parseTimeSlot(side.time ?? undefined);
         const endTimeSlot = parseEndTimeSlot(side.time ?? undefined, timeSlot);
         for (const date of dates) {
@@ -184,7 +189,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       setViewYear(firstDate.getFullYear());
       setViewMonth(firstDate.getMonth());
       setSelectedDate(newEvents[0].date);
-      setSweepingBanner(`Added ${newEvents.length} sweeping events for ${sweepingRequest.street} (next 4 weeks)`);
+      setSweepingBanner(`Added ${newEvents.length} sweeping events for ${sweepingRequest.street} (through end of ${new Date().getFullYear()})`);
     }
 
     onSweepingHandled?.();
@@ -250,6 +255,8 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       recurrence: 'none',
       recurrenceCount: 4,
       editingId: ev.id,
+      isSweeping: ev.isSweeping,
+      streetName: ev.streetName,
     });
     setSubmitted(false);
     setErrors({});
@@ -264,7 +271,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     const e: Partial<ModalState> = {};
     if (!modal) return false;
     if (!modal.name.trim()) e.name = 'Name is required';
-    if (!modal.email.trim()) e.email = 'Email is required';
+    if (!modal.email.trim()) e.email = modal.isSweeping ? 'An email address is required to save street sweeping events' : 'Email is required';
     else if (!/\S+@\S+\.\S+/.test(modal.email)) e.email = 'Invalid email address';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -287,7 +294,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     return dates;
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!modal || !validate()) return;
 
@@ -300,14 +307,19 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       timeSlot: modal.timeSlot,
       endTimeSlot: modal.endTimeSlot !== modal.timeSlot ? modal.endTimeSlot : undefined,
       message: modal.message.trim(),
+      ...(modal.isSweeping && { isSweeping: true, streetName: modal.streetName }),
     }));
 
     if (modal.editingId) {
-      // Replace the original event with updated + any new recurring events
-      onEventsChange((prev) => [
-        ...prev.filter((ev) => ev.id !== modal.editingId),
-        ...newEvents,
-      ]);
+      onEventsChange((prev) => {
+        let updated = prev.filter((ev) => ev.id !== modal.editingId);
+        if (modal.stopRepeat && modal.streetName) {
+          updated = updated.filter(
+            (e) => !(e.isSweeping && e.streetName === modal.streetName && e.timeSlot === modal.timeSlot && e.date > modal.date)
+          );
+        }
+        return [...updated, ...newEvents];
+      });
     } else {
       onEventsChange((prev) => [...prev, ...newEvents]);
     }
@@ -467,6 +479,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                               >
                                 <EditIcon />
                               </button>
+
                               <button
                                 className="planner-event-btn planner-event-btn--delete"
                                 onClick={(e) => { e.stopPropagation(); deleteEvent(ev.id); }}
@@ -551,6 +564,9 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                       onChange={(e) => setModal({ ...modal, email: e.target.value })}
                     />
                     {errors.email && <span className="form-error">{errors.email}</span>}
+                    {modal.isSweeping && !errors.email && (
+                      <span className="form-hint">Required — used to send sweeping reminders.</span>
+                    )}
                   </div>
                   <div className="form-row">
                     <label className="form-label">Message (optional)</label>
@@ -576,36 +592,52 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                       </select>
                     </div>
                   )}
-                  <div className="form-row">
-                    <label className="form-label">Repeat</label>
-                    <select
-                      className="form-input"
-                      value={modal.recurrence}
-                      onChange={(e) => setModal({ ...modal, recurrence: e.target.value as Recurrence })}
-                    >
-                      {RECURRENCE_OPTIONS.map((opt) => (
-                        <option key={opt.value} value={opt.value}>{opt.label}</option>
-                      ))}
-                    </select>
-                  </div>
-                  {modal.recurrence !== 'none' && (
+                  {modal.isSweeping ? (
                     <div className="form-row">
-                      <label className="form-label">Number of occurrences</label>
-                      <input
-                        className="form-input"
-                        type="number"
-                        min={2}
-                        max={52}
-                        value={modal.recurrenceCount}
-                        onChange={(e) => setModal({ ...modal, recurrenceCount: Math.max(2, Math.min(52, Number(e.target.value))) })}
-                      />
-                      <span className="form-hint">
-                        {modal.recurrence === 'daily' && `${modal.recurrenceCount} days`}
-                        {modal.recurrence === 'weekly' && `${modal.recurrenceCount} weeks`}
-                        {modal.recurrence === 'biweekly' && `${modal.recurrenceCount * 2} weeks`}
-                        {modal.recurrence === 'monthly' && `${modal.recurrenceCount} months`}
-                      </span>
+                      <label className="form-label">Recurrence</label>
+                      <label className="recurrence-option">
+                        <input
+                          type="checkbox"
+                          checked={!!modal.stopRepeat}
+                          onChange={() => setModal({ ...modal, stopRepeat: !modal.stopRepeat })}
+                        />
+                        Stop repeating after this date
+                      </label>
                     </div>
+                  ) : (
+                    <>
+                      <div className="form-row">
+                        <label className="form-label">Repeat</label>
+                        <select
+                          className="form-input"
+                          value={modal.recurrence}
+                          onChange={(e) => setModal({ ...modal, recurrence: e.target.value as Recurrence })}
+                        >
+                          {RECURRENCE_OPTIONS.map((opt) => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                      {modal.recurrence !== 'none' && (
+                        <div className="form-row">
+                          <label className="form-label">Number of occurrences</label>
+                          <input
+                            className="form-input"
+                            type="number"
+                            min={2}
+                            max={52}
+                            value={modal.recurrenceCount}
+                            onChange={(e) => setModal({ ...modal, recurrenceCount: Math.max(2, Math.min(52, Number(e.target.value))) })}
+                          />
+                          <span className="form-hint">
+                            {modal.recurrence === 'daily' && `${modal.recurrenceCount} days`}
+                            {modal.recurrence === 'weekly' && `${modal.recurrenceCount} weeks`}
+                            {modal.recurrence === 'biweekly' && `${modal.recurrenceCount * 2} weeks`}
+                            {modal.recurrence === 'monthly' && `${modal.recurrenceCount} months`}
+                          </span>
+                        </div>
+                      )}
+                    </>
                   )}
                   <button type="submit" className="btn-primary btn-full">
                     {modal.editingId ? 'Save Changes' : 'Send Request'}
@@ -662,6 +694,7 @@ function EditIcon() {
     </svg>
   );
 }
+
 
 function TrashIcon() {
   return (
