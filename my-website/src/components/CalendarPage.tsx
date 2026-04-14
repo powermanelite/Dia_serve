@@ -57,6 +57,60 @@ const DAY_NAME_MAP: Record<string, number> = {
   thursday: 4, friday: 5, saturday: 6,
 };
 
+// ── US Holiday calculation ────────────────────────────────────────
+
+function _dateKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+/** nth occurrence of weekday (0=Sun) in a month (0-indexed). n is 1-based. */
+function _nthWeekday(year: number, month: number, weekday: number, n: number): Date {
+  const d = new Date(year, month, 1);
+  d.setDate(1 + ((weekday - d.getDay() + 7) % 7) + (n - 1) * 7);
+  return d;
+}
+
+/** Last occurrence of weekday in a month. */
+function _lastWeekday(year: number, month: number, weekday: number): Date {
+  const last = new Date(year, month + 1, 0);
+  last.setDate(last.getDate() - ((last.getDay() - weekday + 7) % 7));
+  return last;
+}
+
+/** Shift a fixed holiday to its observed date (Sat → Fri, Sun → Mon). */
+function _observed(d: Date): Date {
+  const day = d.getDay();
+  if (day === 6) return new Date(d.getFullYear(), d.getMonth(), d.getDate() - 1);
+  if (day === 0) return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+  return d;
+}
+
+/**
+ * Returns a map of YYYY-MM-DD → holiday name for US federal holidays
+ * observed by San Francisco and Daly City street sweeping.
+ */
+function getUSHolidays(year: number): Record<string, string> {
+  const h: Record<string, string> = {};
+  const add = (d: Date, name: string) => { h[_dateKey(d)] = name; };
+
+  // Fixed-date holidays (adjusted to observed weekday)
+  add(_observed(new Date(year, 0,  1)),  "New Year's Day");
+  add(_observed(new Date(year, 5, 19)),  'Juneteenth');
+  add(_observed(new Date(year, 6,  4)),  'Independence Day');
+  add(_observed(new Date(year, 10, 11)), 'Veterans Day');
+  add(_observed(new Date(year, 11, 25)), 'Christmas Day');
+
+  // Variable holidays
+  add(_nthWeekday(year, 0, 1, 3),   'Martin Luther King Jr. Day'); // 3rd Mon Jan
+  add(_nthWeekday(year, 1, 1, 3),   "Presidents' Day");            // 3rd Mon Feb
+  add(_lastWeekday(year, 4, 1),     'Memorial Day');                // Last Mon May
+  add(_nthWeekday(year, 8, 1, 1),   'Labor Day');                   // 1st Mon Sep
+  add(_nthWeekday(year, 9, 1, 2),   'Indigenous Peoples Day');      // 2nd Mon Oct
+  add(_nthWeekday(year, 10, 4, 4),  'Thanksgiving');                // 4th Thu Nov
+
+  return h;
+}
+
 function getUpcomingDatesForDayInYear(dayName: string): string[] {
   const target = DAY_NAME_MAP[dayName.toLowerCase()];
   if (target === undefined) return [];
@@ -148,15 +202,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
 
     const newEvents: ScheduledEvent[] = [];
 
-    // SF format: sides array with arbitrary blockside labels
-    const sidesNorm: Array<{ label: string; day: string; time: string }> = sweepingRequest.sides
-      ? sweepingRequest.sides
-      : [
-          ...(sweepingRequest.oddSide?.day ? [{ label: 'Odd side', day: sweepingRequest.oddSide.day, time: sweepingRequest.oddSide.time ?? '' }] : []),
-          ...(sweepingRequest.evenSide?.day ? [{ label: 'Even side', day: sweepingRequest.evenSide.day, time: sweepingRequest.evenSide.time ?? '' }] : []),
-        ];
-
-    for (const { label, day, time } of sidesNorm) {
+    for (const { label, day, time } of sweepingRequest.sides) {
       if (!day) continue;
       // Handle slash-separated days like "Monday/Thursday"
       const dayNames = day.split('/').map((d) => d.trim());
@@ -209,6 +255,9 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
   while (cells.length % 7 !== 0) cells.push(null);
 
   const todayStr = toDateStr(today.getFullYear(), today.getMonth(), today.getDate());
+
+  // Holidays for the currently viewed year
+  const holidays = getUSHolidays(viewYear);
 
   // Events grouped by date
   const eventsByDate = events.reduce<Record<string, ScheduledEvent[]>>((acc, ev) => {
@@ -391,21 +440,25 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                 const hasEvents = !!dateEvents;
                 const hasSweeping = dateEvents?.some((e) => e.isSweeping) ?? false;
                 const isSelected = dateStr === selectedDate;
+                const holidayName = holidays[dateStr];
 
                 let cls = 'cal-cell';
                 if (isSelected) cls += ' cal-cell--selected';
                 if (isToday) cls += ' cal-cell--today';
                 if (isPast) cls += ' cal-cell--past';
                 else cls += ' cal-cell--available';
+                if (holidayName) cls += ' cal-cell--holiday';
 
                 return (
                   <button
                     key={day}
                     className={cls}
                     onClick={() => selectDate(day)}
-                    aria-label={`${MONTH_NAMES[viewMonth]} ${day}`}
+                    aria-label={`${MONTH_NAMES[viewMonth]} ${day}${holidayName ? ` — ${holidayName}` : ''}`}
+                    title={holidayName}
                   >
                     {day}
+                    {holidayName && <span className="cal-holiday-dot" />}
                     {hasEvents && <span className={`cal-dot${hasSweeping ? ' cal-dot--sweep' : ''}`} />}
                   </button>
                 );
@@ -415,6 +468,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
             <div className="cal-legend">
               <span className="legend-item"><span className="legend-dot legend-dot--available" />Available</span>
               <span className="legend-item"><span className="legend-dot legend-dot--today" />Today</span>
+              <span className="legend-item"><span className="legend-dot legend-dot--holiday" />Holiday</span>
             </div>
           </div>
 
@@ -428,6 +482,12 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                     <span className="planner-hint">Click a time slot to schedule</span>
                   )}
                 </div>
+                {selectedDate && holidays[selectedDate] && (
+                  <div className="holiday-notice">
+                    <span className="holiday-notice-name">{holidays[selectedDate]}</span>
+                    <span className="holiday-notice-msg">No street sweeping</span>
+                  </div>
+                )}
                 <div className="planner-grid">
                   {/* Background rows – one per hour, clickable when open */}
                   {PLANNER_HOURS.map((hour) => {

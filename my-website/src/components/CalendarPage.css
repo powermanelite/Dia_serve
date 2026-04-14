@@ -690,6 +690,60 @@ select.form-input {
   background: #F59E0B;
 }
 
+/* ── Holiday styles ── */
+.cal-cell--holiday:not(.cal-cell--selected) {
+  background: #FFF1F2;
+  color: #BE123C;
+}
+
+.cal-cell--holiday:not(.cal-cell--selected):hover {
+  background: #FFE4E6;
+  color: #BE123C;
+}
+
+.cal-holiday-dot {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #F43F5E;
+}
+
+.cal-cell--selected .cal-holiday-dot {
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.legend-dot--holiday {
+  background: #F43F5E;
+}
+
+.holiday-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #FFF1F2;
+  border: 1px solid #FECDD3;
+  border-left: 3px solid #F43F5E;
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+}
+
+.holiday-notice-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #BE123C;
+}
+
+.holiday-notice-msg {
+  font-size: 0.8rem;
+  color: #E11D48;
+  font-style: italic;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .cal-layout {
