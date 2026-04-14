@@ -24,50 +24,26 @@ const SF_CENTER: L.LatLngTuple = [37.7749, -122.4194];
 
 type City = 'daly-city' | 'san-francisco';
 
-// ── Daly City types ──────────────────────────────────────────────
-interface ScheduleSide {
-  day?: string;
-  time?: string;
-  side?: string;
-  raw?: string;
-  note?: string;
+// ── Normalized data types ─────────────────────────────────────────
+interface NormalizedEntry {
+  city: 'Daly City' | 'San Francisco';
+  street_name: string;
+  block_limits: string | null;
+  block_side: string | null;
+  weekdays: string[];
+  week_pattern: number[];
+  start_hour: number | null;
+  end_hour: number | null;
+  observes_holidays: boolean;
+  geometry: number[][] | null;
+  source_id: string | null;
 }
 
-interface StreetEntry {
-  street: string;
-  odd_side: ScheduleSide | null;
-  even_side: ScheduleSide | null;
-  location: string | null;
-}
-
-interface SweepingData {
-  source: string;
-  scraped_at: string;
-  total_streets: number;
-  streets: StreetEntry[];
-}
-
-// ── SF types ─────────────────────────────────────────────────────
-interface SFProperties {
-  corridor: string;
-  limits: string;
-  blockside: string;
-  fullname: string;
-  weekday: string;
-  fromhour: string;
-  tohour: string;
-  week1: string; week2: string; week3: string; week4: string; week5: string;
-}
-
-interface SFFeature {
-  type: 'Feature';
-  geometry: { type: 'LineString'; coordinates: number[][] };
-  properties: SFProperties;
-}
-
-interface SFData {
-  type: 'FeatureCollection';
-  features: SFFeature[];
+interface NormalizedData {
+  schema_version: string;
+  generated_at: string;
+  total_entries: number;
+  entries: NormalizedEntry[];
 }
 
 // ── Shared utilities ─────────────────────────────────────────────
@@ -77,20 +53,32 @@ function getTodayDay(): string {
   return DAY_NAMES[new Date().getDay()];
 }
 
-// ── Daly City utilities ──────────────────────────────────────────
-function isScheduledToday(entry: StreetEntry): boolean {
-  const today = getTodayDay();
-  const matchesDay = (side: ScheduleSide | null) => side?.day?.includes(today) ?? false;
-  return matchesDay(entry.odd_side) || matchesDay(entry.even_side);
+/** Format a 24-hour float (e.g. 8.5 = 8:30) as a 12-hour AM/PM string. */
+function formatHour(n: number): string {
+  const h = Math.floor(n);
+  const m = Math.round((n - h) * 60);
+  const pad = (x: number) => String(x).padStart(2, '0');
+  if (h === 0)  return `12:${pad(m)} AM`;
+  if (h < 12)  return `${h}:${pad(m)} AM`;
+  if (h === 12) return `12:${pad(m)} PM`;
+  return `${h - 12}:${pad(m)} PM`;
 }
 
-function formatSide(side: ScheduleSide | null, label: string): string {
-  if (!side) return `${label}: No sweeping`;
-  if (side.raw) return `${label}: ${side.raw}`;
-  if (side.note) return `${label}: ${side.note}`;
-  return `${label}: ${[side.day, side.time].filter(Boolean).join(' ')}`;
+function formatTimeRange(start: number | null, end: number | null): string {
+  if (start === null) return '';
+  if (end === null) return formatHour(start);
+  return `${formatHour(start)} – ${formatHour(end)}`;
 }
 
+/** Reconstruct a human-readable schedule description from weekdays + week_pattern. */
+function formatScheduleDescription(weekdays: string[], week_pattern: number[]): string {
+  const dayStr = weekdays.join(', ');
+  if (week_pattern.length === 0 || week_pattern.length === 5) return dayStr;
+  const ordinals: Record<number, string> = { 1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th' };
+  return `${dayStr} (${week_pattern.map(w => ordinals[w]).join(', ')})`;
+}
+
+// ── DC utilities ─────────────────────────────────────────────────
 function normStreet(s: string): string {
   return s.toLowerCase()
     .replace(/\b(street|avenue|boulevard|drive|road|court|place|circle|way)\b/g, '')
@@ -98,38 +86,20 @@ function normStreet(s: string): string {
     .replace(/\s+/g, ' ').trim();
 }
 
-function matchStreetName(geocodedName: string, streets: StreetEntry[]): StreetEntry | null {
+function matchStreetName(geocodedName: string, streetMap: Map<string, NormalizedEntry[]>): string | null {
   const normRoad = normStreet(geocodedName);
   if (!normRoad) return null;
-  for (const entry of streets) {
-    const en = normStreet(entry.street);
-    if (en && en === normRoad) return entry;
+  for (const [name] of streetMap) {
+    if (normStreet(name) === normRoad) return name;
   }
-  for (const entry of streets) {
-    const en = normStreet(entry.street);
-    if (en && (normRoad.includes(en) || en.includes(normRoad))) return entry;
+  for (const [name] of streetMap) {
+    const en = normStreet(name);
+    if (en && (normRoad.includes(en) || en.includes(normRoad))) return name;
   }
   return null;
 }
 
 // ── SF utilities ─────────────────────────────────────────────────
-const WEEKDAY_FULL: Record<string, string> = {
-  Mon: 'Monday', Tues: 'Tuesday', Wed: 'Wednesday',
-  Thu: 'Thursday', Fri: 'Friday', Sat: 'Saturday', Sun: 'Sunday',
-};
-
-function formatSFHour(h: string): string {
-  const n = parseInt(h);
-  if (n === 0) return '12:00 AM';
-  if (n < 12) return `${n}:00 AM`;
-  if (n === 12) return '12:00 PM';
-  return `${n - 12}:00 PM`;
-}
-
-function isScheduledTodaySF(f: SFFeature): boolean {
-  return WEEKDAY_FULL[f.properties.weekday] === getTodayDay();
-}
-
 /** Minimum distance from point (px,py) to segment (ax,ay)→(bx,by) in coordinate units. */
 function distToSegment(px: number, py: number, ax: number, ay: number, bx: number, by: number): number {
   const dx = bx - ax, dy = by - ay;
@@ -138,26 +108,24 @@ function distToSegment(px: number, py: number, ax: number, ay: number, bx: numbe
   return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
 }
 
-
 /**
- * Find the SF feature (corridor + limits) whose LineString is closest to [lat, lng].
+ * Find the SF entry whose LineString geometry is closest to [lat, lng].
  * Returns null if nothing is within ~300 m (0.003 degrees).
  */
-function findClosestSFFeature(lat: number, lng: number, features: SFFeature[]): SFFeature | null {
-  const MAX_DIST = 0.003; // ~300 m in degrees
+function findClosestSFEntry(lat: number, lng: number, entries: NormalizedEntry[]): NormalizedEntry | null {
+  const MAX_DIST = 0.003;
   let minDist = Infinity;
-  let closestFeature: SFFeature | null = null;
-  for (const f of features) {
-    if (!f.geometry?.coordinates) continue; // skip features with null geometry
-    const coords = f.geometry.coordinates;
+  let closest: NormalizedEntry | null = null;
+  for (const e of entries) {
+    if (!e.geometry) continue;
+    const coords = e.geometry;
     for (let i = 0; i < coords.length - 1; i++) {
       const d = distToSegment(lng, lat, coords[i][0], coords[i][1], coords[i + 1][0], coords[i + 1][1]);
-      if (d < minDist) { minDist = d; closestFeature = f; }
+      if (d < minDist) { minDist = d; closest = e; }
     }
   }
-  return minDist <= MAX_DIST ? closestFeature : null;
+  return minDist <= MAX_DIST ? closest : null;
 }
-
 
 // ── Component ────────────────────────────────────────────────────
 interface MapPageProps {
@@ -171,12 +139,17 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
   const lookupAndPinRef = useRef<((lat: number, lng: number, icon: L.Icon | L.DivIcon) => void) | null>(null);
 
   const [city, setCity] = useState<City>('daly-city');
-  const [data, setData] = useState<SweepingData | null>(null);
-  const [sfData, setSFData] = useState<SFData | null>(null);
+
+  // Single normalized data source — split into DC map and SF entries on load
+  const [normalizedData, setNormalizedData] = useState<NormalizedData | null>(null);
+  const [dcStreetMap, setDCStreetMap] = useState<Map<string, NormalizedEntry[]>>(new Map());
+  const [sfEntries, setSFEntries] = useState<NormalizedEntry[]>([]);
+  const [sfCorridorMap, setSFCorridorMap] = useState<Map<string, NormalizedEntry[]>>(new Map());
+
   const [search, setSearch] = useState('');
   const [filterToday, setFilterToday] = useState(false);
-  const [selectedStreet, setSelectedStreet] = useState<StreetEntry | null>(null);
-  const [selectedSFCorridors, setSelectedSFCorridors] = useState<SFFeature[]>([]);
+  const [selectedDCStreetName, setSelectedDCStreetName] = useState<string | null>(null);
+  const [selectedSFCorridorName, setSelectedSFCorridorName] = useState<string | null>(null);
   const [pinStatus, setPinStatus] = useState<string | null>(null);
   const [isLocating, setIsLocating] = useState(false);
 
@@ -198,25 +171,38 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
   function switchCity(next: City) {
     setCity(next);
     setSearch('');
-    setSelectedStreet(null);
-    setSelectedSFCorridors([]);
+    setSelectedDCStreetName(null);
+    setSelectedSFCorridorName(null);
     setPinStatus(null);
   }
 
-  // Fetch Daly City data
+  // Fetch the single normalized dataset
   useEffect(() => {
-    fetch('./StreetSweeping_DalyCity.json')
+    fetch('./StreetSweeping_Normalized.json')
       .then((r) => r.json())
-      .then((d: SweepingData) => setData(d))
-      .catch((err) => console.error('Failed to load Daly City data:', err));
-  }, []);
+      .then((d: NormalizedData) => {
+        setNormalizedData(d);
 
-  // Fetch SF data
-  useEffect(() => {
-    fetch('./Street_Sweeping_Schedule_SF_20260413.geojson')
-      .then((r) => r.json())
-      .then((d: SFData) => setSFData(d))
-      .catch((err) => console.error('Failed to load SF data:', err));
+        const dcMap = new Map<string, NormalizedEntry[]>();
+        const sfArr: NormalizedEntry[] = [];
+        const sfCorMap = new Map<string, NormalizedEntry[]>();
+
+        for (const e of d.entries) {
+          if (e.city === 'Daly City') {
+            if (!dcMap.has(e.street_name)) dcMap.set(e.street_name, []);
+            dcMap.get(e.street_name)!.push(e);
+          } else {
+            sfArr.push(e);
+            if (!sfCorMap.has(e.street_name)) sfCorMap.set(e.street_name, []);
+            sfCorMap.get(e.street_name)!.push(e);
+          }
+        }
+
+        setDCStreetMap(dcMap);
+        setSFEntries(sfArr);
+        setSFCorridorMap(sfCorMap);
+      })
+      .catch((err) => console.error('Failed to load street sweeping data:', err));
   }, []);
 
   // Init / reinit map when city or data changes
@@ -230,7 +216,6 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
     }
 
     const center = city === 'san-francisco' ? SF_CENTER : DALY_CITY_CENTER;
-    // closePopupOnClick:false prevents Leaflet from closing the popup before we open it
     const map = L.map(mapRef.current, { center, zoom: 13, zoomControl: true, closePopupOnClick: false });
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -238,7 +223,7 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
       maxZoom: 19,
     }).addTo(map);
 
-    // ── Pin-drop logic declared first so GeoJSON handlers can reference it directly ──
+    // ── Pin-drop logic ────────────────────────────────────────────
     async function lookupAndPin(lat: number, lng: number, icon: L.Icon | L.DivIcon) {
       if (droppedPinRef.current) {
         droppedPinRef.current.remove();
@@ -247,20 +232,21 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
       const pin = L.marker([lat, lng], { icon }).addTo(map);
       droppedPinRef.current = pin;
 
-      // ── SF mode: synchronous GeoJSON distance match, no external API ──
+      // ── SF mode: synchronous geometry distance match ──
       if (city === 'san-francisco') {
-        const closest = sfData ? findClosestSFFeature(lat, lng, sfData.features) : null;
-        if (closest && sfData) {
-          const { corridor, limits } = closest.properties;
-          const limitMatches = sfData.features.filter(
-            f => f.properties.corridor === corridor && f.properties.limits === limits
+        const closest = sfEntries.length ? findClosestSFEntry(lat, lng, sfEntries) : null;
+        if (closest) {
+          const corridor = closest.street_name;
+          const limits = closest.block_limits;
+          const limitEntries = sfEntries.filter(
+            e => e.street_name === corridor && e.block_limits === limits
           );
-          const unique = [...new Map(limitMatches.map(f =>
-            [`${f.properties.blockside}-${f.properties.fullname}-${f.properties.fromhour}`, f]
+          const unique = [...new Map(limitEntries.map(e =>
+            [`${e.block_side}-${e.weekdays.join(',')}-${e.start_hour}`, e]
           )).values()];
-          const isToday = limitMatches.some(isScheduledTodaySF);
-          const rows = unique.map(f =>
-            `<div style="margin-bottom:3px"><strong>${f.properties.blockside}:</strong> ${f.properties.fullname} ${formatSFHour(f.properties.fromhour)}–${formatSFHour(f.properties.tohour)}</div>`
+          const isToday = limitEntries.some(e => e.weekdays.includes(getTodayDay()));
+          const rows = unique.map(e =>
+            `<div style="margin-bottom:3px"><strong>${e.block_side}:</strong> ${formatScheduleDescription(e.weekdays, e.week_pattern)} ${formatTimeRange(e.start_hour, e.end_hour)}</div>`
           ).join('');
           pin.bindPopup(`
             <div style="min-width:200px">
@@ -270,7 +256,7 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
               <div style="font-size:0.85em">${rows}</div>
               ${isToday ? '<div style="margin-top:6px;background:#FEF3C7;color:#92400E;padding:4px 8px;border-radius:12px;font-size:0.8em;font-weight:700;text-align:center">Sweeping today!</div>' : ''}
             </div>`).openPopup();
-          setSelectedSFCorridors(limitMatches);
+          setSelectedSFCorridorName(corridor);
           setSearch(corridor);
           setPinStatus('found');
         } else {
@@ -293,31 +279,34 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
 
         if (!road) {
           pin.setPopupContent('<strong>No sweeping data</strong><br/><span style="font-size:0.85em;color:#666">No street found near this point.</span>');
-          setSelectedStreet(null);
+          setSelectedDCStreetName(null);
           setSearch('');
           setPinStatus('no-match');
           return;
         }
 
-        const match = data ? matchStreetName(road, data.streets) : null;
-        if (match) {
+        const matchName = dcStreetMap.size ? matchStreetName(road, dcStreetMap) : null;
+        if (matchName) {
+          const entries = dcStreetMap.get(matchName)!;
+          const blockLimits = entries[0]?.block_limits;
+          const isToday = entries.some(e => e.weekdays.includes(getTodayDay()));
+          const sideRows = entries.map(e =>
+            `<div style="margin-bottom:2px"><strong>${e.block_side}:</strong> ${e.weekdays.join(', ')}${e.start_hour !== null ? ' ' + formatTimeRange(e.start_hour, e.end_hour) : ''}</div>`
+          ).join('');
           pin.setPopupContent(`
             <div style="min-width:200px">
-              <strong>${match.street}</strong>
-              ${match.location ? `<br/><em style="font-size:0.85em;color:#666">${match.location}</em>` : ''}
+              <strong>${matchName}</strong>
+              ${blockLimits ? `<br/><em style="font-size:0.85em;color:#666">${blockLimits}</em>` : ''}
               <hr style="margin:6px 0;border:none;border-top:1px solid #ddd"/>
-              <div style="font-size:0.85em">
-                <strong>Odd Side:</strong> ${match.odd_side ? (match.odd_side.day || match.odd_side.raw || 'N/A') + (match.odd_side.time ? ' ' + match.odd_side.time : '') : 'No sweeping'}<br/>
-                <strong>Even Side:</strong> ${match.even_side ? (match.even_side.day || match.even_side.raw || 'N/A') + (match.even_side.time ? ' ' + match.even_side.time : '') : 'No sweeping'}
-              </div>
-              ${isScheduledToday(match) ? '<div style="margin-top:6px;background:#FEF3C7;color:#92400E;padding:4px 8px;border-radius:12px;font-size:0.8em;font-weight:700;text-align:center">Sweeping today!</div>' : ''}
+              <div style="font-size:0.85em">${sideRows}</div>
+              ${isToday ? '<div style="margin-top:6px;background:#FEF3C7;color:#92400E;padding:4px 8px;border-radius:12px;font-size:0.8em;font-weight:700;text-align:center">Sweeping today!</div>' : ''}
             </div>`);
-          setSelectedStreet(match);
-          setSearch(match.street);
+          setSelectedDCStreetName(matchName);
+          setSearch(matchName);
           setPinStatus('found');
         } else {
           pin.setPopupContent('<strong>No sweeping data</strong><br/><span style="font-size:0.85em;color:#666">This street is not in the Daly City sweeping schedule.</span>');
-          setSelectedStreet(null);
+          setSelectedDCStreetName(null);
           setSearch('');
           setPinStatus('no-match');
         }
@@ -336,23 +325,6 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
         .bindPopup('<strong>Daly City</strong><br/>Street Sweeping Schedule Area');
     }
 
-    // SF GeoJSON lines — click calls lookupAndPin directly (no ref indirection)
-    if (city === 'san-francisco' && sfData) {
-      L.geoJSON(sfData as unknown as Parameters<typeof L.geoJSON>[0], {
-        style: (feature) => {
-          const f = feature as unknown as SFFeature;
-          const today = isScheduledTodaySF(f);
-          return { color: today ? '#F59E0B' : '#6366F1', weight: today ? 4 : 2.5, opacity: 0.7 };
-        },
-        onEachFeature: (_feature, layer) => {
-          layer.on('click', (e: L.LeafletMouseEvent) => {
-            L.DomEvent.stopPropagation(e);
-            lookupAndPin(e.latlng.lat, e.latlng.lng, DEFAULT_ICON);
-          });
-        },
-      }).addTo(map);
-    }
-
     mapInstanceRef.current = map;
 
     map.on('click', (e: L.LeafletMouseEvent) => {
@@ -360,13 +332,12 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
     });
 
     // Auto-drop pin on user location once data is ready
-    const activeData = city === 'san-francisco' ? sfData : data;
-    if (activeData && navigator.geolocation) {
+    const dataReady = city === 'san-francisco' ? sfEntries.length > 0 : dcStreetMap.size > 0;
+    if (dataReady && navigator.geolocation) {
       setPinStatus('locating');
       navigator.geolocation.getCurrentPosition(
         (pos) => {
           const { latitude: lat, longitude: lng } = pos.coords;
-          // animate:false prevents the pan animation from interfering with openPopup
           map.setView([lat, lng], 15, { animate: false });
           lookupAndPin(lat, lng, LOCATION_ICON);
         },
@@ -382,15 +353,15 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
       }
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [city, data, sfData]);
+  }, [city, dcStreetMap, sfEntries]);
 
-  // ── Forward-geocode a Daly City street and drop a pin on it ──────
-  async function pinStreetOnMap(entry: StreetEntry) {
+  // ── Forward-geocode a DC street and drop a pin on it ─────────────
+  async function pinStreetOnMap(streetName: string, entries: NormalizedEntry[]) {
     const map = mapInstanceRef.current;
     if (!map) return;
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?street=${encodeURIComponent(entry.street)}&city=Daly+City&state=CA&country=US&format=json&limit=1`
+        `https://nominatim.openstreetmap.org/search?street=${encodeURIComponent(streetName)}&city=Daly+City&state=CA&country=US&format=json&limit=1`
       );
       if (!res.ok) return;
       const results = await res.json();
@@ -409,31 +380,34 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
       droppedPinRef.current = pin;
       map.setView([lat, lng], 16, { animate: false });
 
+      const blockLimits = entries[0]?.block_limits;
+      const isToday = entries.some(e => e.weekdays.includes(getTodayDay()));
+      const sideRows = entries.map(e =>
+        `<div style="margin-bottom:2px"><strong>${e.block_side}:</strong> ${e.weekdays.join(', ')}${e.start_hour !== null ? ' ' + formatTimeRange(e.start_hour, e.end_hour) : ''}</div>`
+      ).join('');
+
       pin.bindPopup(`
         <div style="min-width:200px">
-          <strong>${entry.street}</strong>
-          ${entry.location ? `<br/><em style="font-size:0.85em;color:#666">${entry.location}</em>` : ''}
+          <strong>${streetName}</strong>
+          ${blockLimits ? `<br/><em style="font-size:0.85em;color:#666">${blockLimits}</em>` : ''}
           <hr style="margin:6px 0;border:none;border-top:1px solid #ddd"/>
-          <div style="font-size:0.85em">
-            <strong>Odd Side:</strong> ${entry.odd_side ? (entry.odd_side.day || entry.odd_side.raw || 'N/A') + (entry.odd_side.time ? ' ' + entry.odd_side.time : '') : 'No sweeping'}<br/>
-            <strong>Even Side:</strong> ${entry.even_side ? (entry.even_side.day || entry.even_side.raw || 'N/A') + (entry.even_side.time ? ' ' + entry.even_side.time : '') : 'No sweeping'}
-          </div>
-          ${isScheduledToday(entry) ? '<div style="margin-top:6px;background:#FEF3C7;color:#92400E;padding:4px 8px;border-radius:12px;font-size:0.8em;font-weight:700;text-align:center">Sweeping today!</div>' : ''}
+          <div style="font-size:0.85em">${sideRows}</div>
+          ${isToday ? '<div style="margin-top:6px;background:#FEF3C7;color:#92400E;padding:4px 8px;border-radius:12px;font-size:0.8em;font-weight:700;text-align:center">Sweeping today!</div>' : ''}
         </div>`).openPopup();
     } catch {
       // geocode failed silently — detail panel still shows in sidebar
     }
   }
 
-  // ── Pin an SF corridor using its GeoJSON geometry (no geocoding needed) ──
-  function pinCorridorOnMap(features: SFFeature[]) {
+  // ── Pin an SF corridor using its geometry (no geocoding needed) ──
+  function pinCorridorOnMap(entries: NormalizedEntry[]) {
     const map = mapInstanceRef.current;
     if (!map) return;
 
-    const firstFeature = features.find(f => f.geometry?.coordinates && f.geometry.coordinates.length >= 2);
-    if (!firstFeature) return;
+    const firstWithGeom = entries.find(e => e.geometry && e.geometry.length >= 2);
+    if (!firstWithGeom) return;
 
-    const coords = firstFeature.geometry.coordinates;
+    const coords = firstWithGeom.geometry!;
     const midIdx = Math.floor(coords.length / 2);
     const lat = coords[midIdx][1];
     const lng = coords[midIdx][0];
@@ -447,22 +421,22 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
     droppedPinRef.current = pin;
     map.setView([lat, lng], 16, { animate: false });
 
-    const corridor = firstFeature.properties.corridor;
-    const isToday = features.some(isScheduledTodaySF);
+    const corridor = entries[0].street_name;
+    const isToday = entries.some(e => e.weekdays.includes(getTodayDay()));
 
-    // Group by limits, deduplicate by blockside+fromhour
-    const byLimits = new Map<string, SFFeature[]>();
-    for (const f of features) {
-      if (!byLimits.has(f.properties.limits)) byLimits.set(f.properties.limits, []);
-      byLimits.get(f.properties.limits)!.push(f);
+    const byLimits = new Map<string, NormalizedEntry[]>();
+    for (const e of entries) {
+      const key = e.block_limits ?? '';
+      if (!byLimits.has(key)) byLimits.set(key, []);
+      byLimits.get(key)!.push(e);
     }
 
-    const content = [...byLimits.entries()].map(([limits, lf]) => {
-      const unique = [...new Map(lf.map(f =>
-        [`${f.properties.blockside}-${f.properties.fullname}-${f.properties.fromhour}`, f]
+    const content = [...byLimits.entries()].map(([limits, lEntries]) => {
+      const unique = [...new Map(lEntries.map(e =>
+        [`${e.block_side}-${e.weekdays.join(',')}-${e.start_hour}`, e]
       )).values()];
-      const rows = unique.map(f =>
-        `<div style="margin-bottom:2px"><strong>${f.properties.blockside}:</strong> ${f.properties.fullname} ${formatSFHour(f.properties.fromhour)}–${formatSFHour(f.properties.tohour)}</div>`
+      const rows = unique.map(e =>
+        `<div style="margin-bottom:2px"><strong>${e.block_side}:</strong> ${formatScheduleDescription(e.weekdays, e.week_pattern)} ${formatTimeRange(e.start_hour, e.end_hour)}</div>`
       ).join('');
       return `
         <div style="margin-bottom:6px">
@@ -480,43 +454,41 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
       </div>`).openPopup();
   }
 
-  // ── Derived list data ──────────────────────────────────────────
+  // ── Derived list data ─────────────────────────────────────────
+  const today = getTodayDay();
 
-  const filteredStreets = data
-    ? data.streets.filter((e) =>
-        e.street.toLowerCase().includes(search.toLowerCase()) &&
-        (!filterToday || isScheduledToday(e))
-      )
+  const filteredDCStreets = dcStreetMap.size
+    ? [...dcStreetMap.entries()]
+        .filter(([name, entries]) =>
+          name.toLowerCase().includes(search.toLowerCase()) &&
+          (!filterToday || entries.some(e => e.weekdays.includes(today)))
+        )
+        .map(([name, entries]) => ({ name, entries }))
     : [];
 
-  const sfFilteredCorridors = sfData
-    ? (() => {
-        const map = new Map<string, SFFeature[]>();
-        sfData.features.forEach((f) => {
-          if (!map.has(f.properties.corridor)) map.set(f.properties.corridor, []);
-          map.get(f.properties.corridor)!.push(f);
-        });
-        return [...map.entries()]
-          .filter(([corridor, features]) =>
-            corridor.toLowerCase().includes(search.toLowerCase()) &&
-            (!filterToday || features.some(isScheduledTodaySF))
-          )
-          .map(([corridor, features]) => ({ corridor, features }));
-      })()
+  const filteredSFCorridors = sfCorridorMap.size
+    ? [...sfCorridorMap.entries()]
+        .filter(([corridor, entries]) =>
+          corridor.toLowerCase().includes(search.toLowerCase()) &&
+          (!filterToday || entries.some(e => e.weekdays.includes(today)))
+        )
+        .map(([corridor, entries]) => ({ corridor, entries }))
     : [];
 
-  const todayStr = getTodayDay();
-  const selectedSFCorridor = selectedSFCorridors.length > 0 ? selectedSFCorridors[0].properties.corridor : null;
-  // Group selected corridor features by limits (block), preserving insertion order
+  const selectedDCEntries = selectedDCStreetName ? (dcStreetMap.get(selectedDCStreetName) ?? []) : [];
+  const selectedSFEntries = selectedSFCorridorName ? (sfCorridorMap.get(selectedSFCorridorName) ?? []) : [];
+
   const sfByLimits = (() => {
-    const map = new Map<string, SFFeature[]>();
-    for (const f of selectedSFCorridors) {
-      if (!map.has(f.properties.limits)) map.set(f.properties.limits, []);
-      map.get(f.properties.limits)!.push(f);
+    const m = new Map<string, NormalizedEntry[]>();
+    for (const e of selectedSFEntries) {
+      const key = e.block_limits ?? '';
+      if (!m.has(key)) m.set(key, []);
+      m.get(key)!.push(e);
     }
-    return [...map.entries()].map(([limits, features]) => ({ limits, features }));
+    return [...m.entries()].map(([limits, entries]) => ({ limits, entries }));
   })();
-  const sfIsToday = selectedSFCorridors.some(isScheduledTodaySF);
+
+  const sfIsToday = selectedSFEntries.some(e => e.weekdays.includes(today));
 
   return (
     <div className="map-page">
@@ -593,8 +565,8 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
-                  setSelectedStreet(null);
-                  setSelectedSFCorridors([]);
+                  setSelectedDCStreetName(null);
+                  setSelectedSFCorridorName(null);
                 }}
               />
               <label className="sweep-toggle">
@@ -603,50 +575,54 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
                   checked={filterToday}
                   onChange={(e) => {
                     setFilterToday(e.target.checked);
-                    setSelectedStreet(null);
-                    setSelectedSFCorridors([]);
+                    setSelectedDCStreetName(null);
+                    setSelectedSFCorridorName(null);
                   }}
                 />
-                <span>Today ({todayStr})</span>
+                <span>Today ({today})</span>
               </label>
             </div>
 
             {/* Daly City detail panel */}
-            {city === 'daly-city' && selectedStreet && (
+            {city === 'daly-city' && selectedDCStreetName && (
               <div className="sweep-detail">
                 <div className="sweep-detail-header">
-                  <h4 className="sweep-detail-name">{selectedStreet.street}</h4>
-                  <button className="sweep-detail-close" onClick={() => setSelectedStreet(null)}>&times;</button>
+                  <h4 className="sweep-detail-name">{selectedDCStreetName}</h4>
+                  <button className="sweep-detail-close" onClick={() => setSelectedDCStreetName(null)}>&times;</button>
                 </div>
-                {selectedStreet.location && <p className="sweep-detail-loc">{selectedStreet.location}</p>}
+                {selectedDCEntries[0]?.block_limits && (
+                  <p className="sweep-detail-loc">{selectedDCEntries[0].block_limits}</p>
+                )}
                 <div className="sweep-detail-sides">
-                  <div className="sweep-side">
-                    <span className="sweep-side-label">Odd Side</span>
-                    {selectedStreet.odd_side ? (
-                      <>
-                        <span className="sweep-side-day">{selectedStreet.odd_side.day || selectedStreet.odd_side.raw}</span>
-                        {selectedStreet.odd_side.time && <span className="sweep-side-time">{selectedStreet.odd_side.time}</span>}
-                      </>
-                    ) : <span className="sweep-side-none">No sweeping</span>}
-                  </div>
-                  <div className="sweep-side">
-                    <span className="sweep-side-label">Even Side</span>
-                    {selectedStreet.even_side ? (
-                      <>
-                        <span className="sweep-side-day">{selectedStreet.even_side.day || selectedStreet.even_side.raw}</span>
-                        {selectedStreet.even_side.time && <span className="sweep-side-time">{selectedStreet.even_side.time}</span>}
-                      </>
-                    ) : <span className="sweep-side-none">No sweeping</span>}
-                  </div>
+                  {selectedDCEntries.map((e, i) => (
+                    <div key={i} className="sweep-side">
+                      <span className="sweep-side-label">{e.block_side} Side</span>
+                      {e.weekdays.length > 0 ? (
+                        <>
+                          <span className="sweep-side-day">{e.weekdays.join(', ')}</span>
+                          {e.start_hour !== null && (
+                            <span className="sweep-side-time">{formatTimeRange(e.start_hour, e.end_hour)}</span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="sweep-side-none">No sweeping</span>
+                      )}
+                    </div>
+                  ))}
                 </div>
-                {isScheduledToday(selectedStreet) && <div className="sweep-today-badge">Sweeping today!</div>}
+                {selectedDCEntries.some(e => e.weekdays.includes(today)) && (
+                  <div className="sweep-today-badge">Sweeping today!</div>
+                )}
                 {onAddToCalendar && (
                   <button
                     className="sweep-add-cal-btn"
                     onClick={() => onAddToCalendar({
-                      street: selectedStreet.street,
-                      oddSide: selectedStreet.odd_side,
-                      evenSide: selectedStreet.even_side,
+                      street: selectedDCStreetName,
+                      sides: selectedDCEntries.map(e => ({
+                        label: `${e.block_side} side`,
+                        day: e.weekdays.join('/'),
+                        time: formatTimeRange(e.start_hour, e.end_hour),
+                      })),
                     })}
                   >
                     Add to Calendar
@@ -656,32 +632,32 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
             )}
 
             {/* SF detail panel */}
-            {city === 'san-francisco' && selectedSFCorridor && (
+            {city === 'san-francisco' && selectedSFCorridorName && (
               <div className="sweep-detail">
                 <div className="sweep-detail-header">
-                  <h4 className="sweep-detail-name">{selectedSFCorridor}</h4>
-                  <button className="sweep-detail-close" onClick={() => setSelectedSFCorridors([])}>&times;</button>
+                  <h4 className="sweep-detail-name">{selectedSFCorridorName}</h4>
+                  <button className="sweep-detail-close" onClick={() => setSelectedSFCorridorName(null)}>&times;</button>
                 </div>
                 <div className="sf-schedules">
-                  {sfByLimits.map(({ limits, features }) => (
+                  {sfByLimits.map(({ limits, entries: limitsEntries }) => (
                     <div key={limits} className="sf-limits-entry">
                       <div
                         className="sf-limits-group sf-limits-group--clickable"
-                        onClick={() => pinCorridorOnMap(features)}
+                        onClick={() => pinCorridorOnMap(limitsEntries)}
                         role="button"
                         tabIndex={0}
-                        onKeyDown={(e) => e.key === 'Enter' && pinCorridorOnMap(features)}
+                        onKeyDown={(e) => e.key === 'Enter' && pinCorridorOnMap(limitsEntries)}
                         title="Click to pin this block on the map"
                       >
                         <span className="sf-limits-label">{limits}</span>
-                        {features.map((f, i) => (
+                        {limitsEntries.map((e, i) => (
                           <div key={i} className="sf-schedule-row">
-                            <span className="sf-schedule-side">{f.properties.blockside}</span>
+                            <span className="sf-schedule-side">{e.block_side}</span>
                             <div className="sf-schedule-info">
-                              <span className="sweep-side-day">{f.properties.fullname}</span>
-                              <span className="sweep-side-time">
-                                {formatSFHour(f.properties.fromhour)} – {formatSFHour(f.properties.tohour)}
-                              </span>
+                              <span className="sweep-side-day">{formatScheduleDescription(e.weekdays, e.week_pattern)}</span>
+                              {e.start_hour !== null && (
+                                <span className="sweep-side-time">{formatTimeRange(e.start_hour, e.end_hour)}</span>
+                              )}
                             </div>
                           </div>
                         ))}
@@ -690,13 +666,11 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
                         <button
                           className="sweep-add-cal-btn"
                           onClick={() => onAddToCalendar({
-                            street: `${selectedSFCorridor} (${limits})`,
-                            oddSide: null,
-                            evenSide: null,
-                            sides: features.map((f) => ({
-                              label: f.properties.blockside,
-                              day: WEEKDAY_FULL[f.properties.weekday] ?? f.properties.weekday,
-                              time: `${formatSFHour(f.properties.fromhour)} – ${formatSFHour(f.properties.tohour)}`,
+                            street: `${selectedSFCorridorName} (${limits})`,
+                            sides: limitsEntries.map(e => ({
+                              label: e.block_side ?? 'Side',
+                              day: e.weekdays.join('/'),
+                              time: formatTimeRange(e.start_hour, e.end_hour),
                             })),
                           })}
                         >
@@ -715,49 +689,57 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
             {/* Street list */}
             <div className="sweep-list">
               {city === 'daly-city' ? (
-                !data ? (
+                !normalizedData ? (
                   <p className="sweep-loading">Loading schedule data...</p>
-                ) : filteredStreets.length === 0 ? (
+                ) : filteredDCStreets.length === 0 ? (
                   <p className="sweep-empty">No streets found{search ? ` for "${search}"` : ''}.</p>
                 ) : (
                   <>
-                    {filteredStreets.slice(0, 50).map((entry, i) => (
+                    {filteredDCStreets.slice(0, 50).map(({ name, entries }) => (
                       <button
-                        key={`${entry.street}-${i}`}
-                        className={`sweep-item${selectedStreet === entry ? ' sweep-item--active' : ''}${isScheduledToday(entry) ? ' sweep-item--today' : ''}`}
-                        onClick={() => { setSelectedStreet(entry); pinStreetOnMap(entry); }}
+                        key={name}
+                        className={`sweep-item${selectedDCStreetName === name ? ' sweep-item--active' : ''}${entries.some(e => e.weekdays.includes(today)) ? ' sweep-item--today' : ''}`}
+                        onClick={() => { setSelectedDCStreetName(name); pinStreetOnMap(name, entries); }}
                       >
-                        <span className="sweep-item-name">{entry.street}</span>
-                        <span className="sweep-item-preview">{formatSide(entry.odd_side, 'Odd')}</span>
-                        {entry.location && <span className="sweep-item-loc">{entry.location}</span>}
+                        <span className="sweep-item-name">{name}</span>
+                        <span className="sweep-item-preview">
+                          {entries[0]
+                            ? `${entries[0].block_side}: ${entries[0].weekdays.join(', ')}${entries[0].start_hour !== null ? ' ' + formatTimeRange(entries[0].start_hour, entries[0].end_hour) : ''}`
+                            : ''}
+                        </span>
+                        {entries[0]?.block_limits && (
+                          <span className="sweep-item-loc">{entries[0].block_limits}</span>
+                        )}
                       </button>
                     ))}
-                    {filteredStreets.length > 50 && (
-                      <p className="sweep-more">Showing 50 of {filteredStreets.length} results. Refine your search.</p>
+                    {filteredDCStreets.length > 50 && (
+                      <p className="sweep-more">Showing 50 of {filteredDCStreets.length} results. Refine your search.</p>
                     )}
                   </>
                 )
               ) : (
-                !sfData ? (
+                !normalizedData ? (
                   <p className="sweep-loading">Loading SF schedule data...</p>
-                ) : sfFilteredCorridors.length === 0 ? (
+                ) : filteredSFCorridors.length === 0 ? (
                   <p className="sweep-empty">No streets found{search ? ` for "${search}"` : ''}.</p>
                 ) : (
                   <>
-                    {sfFilteredCorridors.slice(0, 50).map(({ corridor, features }) => (
+                    {filteredSFCorridors.slice(0, 50).map(({ corridor, entries }) => (
                       <button
                         key={corridor}
-                        className={`sweep-item${selectedSFCorridor === corridor ? ' sweep-item--active' : ''}${features.some(isScheduledTodaySF) ? ' sweep-item--today' : ''}`}
-                        onClick={() => { setSelectedSFCorridors(features); pinCorridorOnMap(features); }}
+                        className={`sweep-item${selectedSFCorridorName === corridor ? ' sweep-item--active' : ''}${entries.some(e => e.weekdays.includes(today)) ? ' sweep-item--today' : ''}`}
+                        onClick={() => { setSelectedSFCorridorName(corridor); pinCorridorOnMap(entries); }}
                       >
                         <span className="sweep-item-name">{corridor}</span>
                         <span className="sweep-item-preview">
-                          {features[0].properties.fullname} · {formatSFHour(features[0].properties.fromhour)}–{formatSFHour(features[0].properties.tohour)}
+                          {entries[0]
+                            ? `${formatScheduleDescription(entries[0].weekdays, entries[0].week_pattern)} · ${formatTimeRange(entries[0].start_hour, entries[0].end_hour)}`
+                            : ''}
                         </span>
                       </button>
                     ))}
-                    {sfFilteredCorridors.length > 50 && (
-                      <p className="sweep-more">Showing 50 of {sfFilteredCorridors.length} results. Refine your search.</p>
+                    {filteredSFCorridors.length > 50 && (
+                      <p className="sweep-more">Showing 50 of {filteredSFCorridors.length} results. Refine your search.</p>
                     )}
                   </>
                 )

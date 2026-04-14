@@ -1,0 +1,5791 @@
+{
+  "source": "https://www.dalycity.org/460/Street-Sweeping-Schedule",
+  "scraped_at": "2026-04-11T14:28:37.242440",
+  "total_streets": 421,
+  "streets": [
+    {
+      "street": "1st Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "2nd Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "3rd. Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "87th Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "location": "Junipero Serra to border So. Mayfair to border"
+    },
+    {
+      "street": "88th Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "89th Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "90th Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "91st Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "92nd  Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "A Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Abbot Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": "Castle to Gambetta Street Byrne to Hoffman Hoffman to Chester Chester to Byrne"
+    },
+    {
+      "street": "Accacia Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Action Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Alexander Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Alexis Circle",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Allan Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Allemany Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Alp Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Alpine Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Alta Loma Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Alta Vista Way",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Amhurst Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 PM - 1 PM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 PM - 1 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Annie Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Arcadia Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Arden Court",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Ardendale",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Arley Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 PM - 1 PM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 PM - 1 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Ashland Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Atlanta Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Avalon Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "B Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "5:30 AM - 7 AM"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "5:30 AM - 7 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Bacon Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Baldwin Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Baltimore Way",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Bayridge Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Bayshore Boulevard",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Beachside Court",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Beechwood Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Belcrest Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Belford Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Belhaven Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Belhaven Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Bellevue Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": "Peoria Street to Pope Street Pope Street to South Hill South Hill Boulevard to Ardendale Drive"
+    },
+    {
+      "street": "Bel Mar Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": "OLM to Lake Merced Forest Grove to Park Plaza"
+    },
+    {
+      "street": "Belmont Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Bepler Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Berta Circle",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Beta Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Beverly Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Bismark Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": "Mission to Hillside Boulevard Hillside to Wyandotte"
+    },
+    {
+      "street": "Blossom Court",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Bolero Way",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Bonnie Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Bradley Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Briggs Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Brighton Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Bromley Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Brooklawn Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Bruno Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Brunswick Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Bryant Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Buena Vista Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Byrne Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": "N/A Sylvan to Abbot Abbot to Lisbon"
+    },
+    {
+      "street": "C Street",
+      "odd_side": {
+        "day": "City of Colma",
+        "time": null,
+        "note": "Managed by another city"
+      },
+      "even_side": {
+        "day": "City of Colma",
+        "time": null,
+        "note": "Managed by another city"
+      },
+      "location": null
+    },
+    {
+      "street": "Calgary Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Callan Boulevard",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "location": "Hickey to King Drive Hickey to Clarinada"
+    },
+    {
+      "street": "Camelia Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Camelot Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Cameo Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Campana Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Canterbury Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Canyon Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Carleton Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Carmel Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Caroline Way",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Carrizal Drive",
+      "odd_side": {
+        "day": "City of San Francisco",
+        "time": null,
+        "note": "Managed by another city"
+      },
+      "even_side": {
+        "day": "City of San Francisco",
+        "time": null,
+        "note": "Managed by another city"
+      },
+      "location": null
+    },
+    {
+      "street": "Carter Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Casa Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Castillejo Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "1 PM - 3 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": "Clarinada to Belhaven Higate to Manzanita"
+    },
+    {
+      "street": "Castillo Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Castle Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Castlemont Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Castleton Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Cerro Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Chelsea Court",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Chester Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Christen Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Christopher Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Citrus Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "10 AM - 12:00 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "10 AM - 12:00 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Clarinada Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": "Higate to St. Francis St. Francis to  Callan"
+    },
+    {
+      "street": "Clark Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Clayton Court",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Clearview Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Cliffside Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 3 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Clifton Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Cobblestone Court",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": "All Even Numbers"
+    },
+    {
+      "street": "Como Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Cordova Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Cottonwood Drive",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "County Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Craig Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Crenshaw Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Crestline Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Creston Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Crestview Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Crestwood Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Crocker Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "D Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "5:30 AM - 7 AM"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "5:30 AM - 7 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Dalerose Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "De Long Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Del Prado Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Deanne Lane",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Dennis Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Derby Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Dixon Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Dorchester Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Dover Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "E Cavour Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Eastgate Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Eastlake Drive",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "E Market Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": "Mission to Hillside Hillside to Orange Street Hillside to Lausanne Lausanne to Price Street Orange Street to Price Street"
+    },
+    {
+      "street": "E Moltke Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": "Mission to Wyandotte Lausanne to Price Street"
+    },
+    {
+      "street": "Eastmoor Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "1 PM - 3 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Eastmoor - Overpass",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "1 PM - 3 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "E Vista Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Eastwood Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Eaton Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Edgemar Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Edgemont Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Edgewood Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Edgeworth Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "87 th Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "location": "JS to Border"
+    },
+    {
+      "street": "88 th Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "89 th Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "El Dorado Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Elmwood Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "El Portal Way",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Escuela Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Estate Court",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Evergreen Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Fairlawn Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Fairlawn Court",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Fairmont Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Fairview Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Fairway Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Fernwood Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Fieldcrest Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "1 st Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Fleetwood Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Florence Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": "Chester to Hoffman Price to East Market"
+    },
+    {
+      "street": "Flournoy Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "4 AM - 5 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": "San Jose to Mission San Jose to San Francisco Limits"
+    },
+    {
+      "street": "Ford Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Forest Grove Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Frankfort Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Gambetta Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": "Mission to Hillside Blvd. Hillside to Lausanne Ave."
+    },
+    {
+      "street": "Garden Gateway",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 8:30 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Garden Grove Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Garibaldi Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Garibaldi Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Garwood Drive",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Gateway Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Gellert Boulevard",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "1 PM - 3 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": "Serravista to King Drive"
+    },
+    {
+      "street": "Geneva Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Glenbrook Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Glenrose Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Glenwood Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Goethe Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Grandview Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Guadalupe Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Guttenburg Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Hampshire Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Hampshire Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Hanover Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Heath Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Hickey Boulevard",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Higate Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "12 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": "Edgemont Dr. to South end Christopher Ct. to St. Francis Blvd"
+    },
+    {
+      "street": "Highland Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Hill Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "5 AM - 6 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "5 AM - 6 AM",
+        "side": "West"
+      },
+      "location": "Washington to West Market San Pedro Road to D Street"
+    },
+    {
+      "street": "Hillcrest Drive",
+      "odd_side": {
+        "day": "Friday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Hillsdale Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Hillside Boulevard",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": "Mission Street to East Market East Market to Valley"
+    },
+    {
+      "street": "Hillview Court",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Hoffman Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Huntington Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Hyde Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Irvington Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Jacqueline Court",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Jacqueline Lane",
+      "odd_side": {
+        "day": "Tuesday"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "John Daly Boulevard",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 11 AM"
+      },
+      "location": "N/A Niantic to Woodrow"
+    },
+    {
+      "street": "John Glenn Circle",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "John Pappan Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Junipero Serra Boulevard",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 8 AM"
+      },
+      "location": "N/A Westlake Boulevard to John Daly Boulevard"
+    },
+    {
+      "street": "Kent Court",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "King Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Knowles Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": "N.A"
+    },
+    {
+      "street": "Lake Forest Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Lake Meadow Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Lake Merced Boulevard",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "5 AM - 7 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Lakemont Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Lakeshire Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": "Lincoln to Southgate Southgate and Christopher"
+    },
+    {
+      "street": "Lakeview Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Lake Vista Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Lakewood Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Larkspur Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Lausanne Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": "Chester to Hoffman East Market to Bonnie Gambetta to Edgewood"
+    },
+    {
+      "street": "Liebig Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Lincoln Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": "Mariposa to Southgate Higate to Southgate"
+    },
+    {
+      "street": "Linda Vista Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Linden Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Lisbon Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Longview Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Los Banos Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Los Olivos Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Lowell Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Lynvale Court",
+      "odd_side": null,
+      "even_side": null,
+      "location": null
+    },
+    {
+      "street": "Lycett Circle",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "1 PM - 3 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "MacDonald Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Maddux Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Manor Court",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Manzanita Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Marbly Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Margate Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Mariposa Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Marshall Way",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Martin Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "South"
+      },
+      "location": "N/A Carter to Rio Verde"
+    },
+    {
+      "street": "Mar Vista Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Mateo Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Mayfield Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Maywood Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Menlo Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Midvale Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Mirada Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Mira Vista Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Miriam Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": "Knowles and Parkview Parkview and South End"
+    },
+    {
+      "street": "Mission Circle",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Mission Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "5 AM - 6 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "5 AM - 6 AM",
+        "side": "West"
+      },
+      "location": "San Pedro to Willington Wellington to Templeton"
+    },
+    {
+      "street": "Montebello Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Montclair Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Monterey Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Montrose Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Morningside Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Morton Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "West"
+      },
+      "location": "Wembley to Callan Callan to Warwick"
+    },
+    {
+      "street": "Muirwood Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Nancy Lane",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Nelson Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Niantic Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": "John Daly to North Parkview South Parkview to South End"
+    },
+    {
+      "street": "90 th (Ninetieth) Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "91 st (Ninety First) Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "92 nd (Ninety Second) Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Northaven Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Northgate Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Northgate Court",
+      "odd_side": null,
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": "All Addresses are even numbers"
+    },
+    {
+      "street": "North Mayfair Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "North Parkview Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Northridge Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Norwood Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "North Lycett Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "1 PM - 3 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Oaklawn Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Oakmont Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Oakridge Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Ocean Grove Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Oceanside Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Oclese Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Oliver Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Olympic Way",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Orange Court",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Orange Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Oriente Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Ottilia Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Pacifico Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Palisades Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Palmdale Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Palomar Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Pamela Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Park Manor Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Park Plaza Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "5 AM - 7 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Parkrose Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Parkside Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": "Except Court Court portion"
+    },
+    {
+      "street": "Parkview Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "10 AM - 12:00 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Parkwood Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Parma Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Parnell Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Partridge Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Partridge Lane",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Pasadena Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Paul Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Penhurst Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Penhurst Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Peoria Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Perita Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Peter Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Pierce Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Pinehaven Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Plymouth Circle",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "1 PM - 3 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Polaris Way",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Poncetta Drive",
+      "odd_side": null,
+      "even_side": null,
+      "location": null
+    },
+    {
+      "street": "Portola Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Price Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": "Mission to Hillside Hillside to East Market"
+    },
+    {
+      "street": "Pueblo Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Ravilla Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Rhine Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Rice Street",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Ridgefield Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Rio Verde Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Risel Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Robinson Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Rockford Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Rockridge Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Roosevelt Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Rosyln Court",
+      "odd_side": {
+        "day": "Monday",
+        "time": "10 AM - 12:00 PM"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "10 AM - 12:00 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Royce Way",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Saint Catherine Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Saint Charles Avenue",
+      "odd_side": null,
+      "even_side": null,
+      "location": null
+    },
+    {
+      "street": "Saint Francis Boulevard",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": "Southgate to Eastmoor Southgate to Highgate & End"
+    },
+    {
+      "street": "Saint James Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Saint Marks Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Saint Michael Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "San Diego Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": "Delong to North Parkview Parkview to South end"
+    },
+    {
+      "street": "San Fernando Way",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "San Jose Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "5 AM - 6 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "San Juan Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "San Miguel Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "San Pedro Road",
+      "odd_side": {
+        "time": "5 AM - 6 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "time": "5 AM - 6 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Santa Ana Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Santa Barbara Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Santa Cruz Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Santa Elena Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Santa Paula Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Santa Rita Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Savage Way",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": "No Addresses"
+    },
+    {
+      "street": "School Street",
+      "odd_side": {
+        "time": "5 AM - 6 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "time": "5 AM - 6 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Schwerin Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Seacliff Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Seacrest Court",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "Seaview Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "2 nd (Second) Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Serramonte Boulevard",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": "Saint Francis to Callan"
+    },
+    {
+      "street": "Serravista Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Shakespeare Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Sharon Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Sheffield Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Shelbourne Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Shipley Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Simpson Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Skyline Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Southdale Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Southgate Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": "Park Plaza to Eastmoor Westmoor to Cerro Drive"
+    },
+    {
+      "street": "Southhill Boulevard",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Southhill Court",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM"
+      },
+      "location": null
+    },
+    {
+      "street": "South Lycett Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "1 PM - 3 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "South Mayfair Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": "Poncetta to Lake Merced Lake Merced to Wildwood Wildwood to Westmoor"
+    },
+    {
+      "street": "South Parkview Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "10 AM - 12:00 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "10 AM - 12:00 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Southridge Way",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Station Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Stafford Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Stoneyford Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Sullivan Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "8:30 AM - 10:30 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "8:30 AM - 10:30 AM",
+        "side": "West"
+      },
+      "location": "Eastmoor to Southgate Eastmoor to 87 th Street"
+    },
+    {
+      "street": "Surrey Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Sylvan Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Talbert Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9:30 AM - 11:30 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Tallwood Drive",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Templeton Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Teresa Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Terrace Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Terrace Court",
+      "odd_side": null,
+      "even_side": null,
+      "location": null
+    },
+    {
+      "street": "Theta Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Theirs Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "3 rd (Third) Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Upland Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Vale Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Valley Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Velasco Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Vendome Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Verano Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Verducci Court",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Verducci Drive",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": "Gellert to King Gellert to East End"
+    },
+    {
+      "street": "Victoria Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Villa Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "location": "N.A"
+    },
+    {
+      "street": "Vista Grande Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Wakefield Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Ward Court",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Warwick Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Washington Street",
+      "odd_side": {
+        "day": "Monday",
+        "time": "6 AM - 7:30 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "7 AM - 8:30 AM",
+        "side": "North"
+      },
+      "location": "Juniperro Serra to Annie Juniperro Serra to San Pedro Road"
+    },
+    {
+      "street": "Wavecrest Drive",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Waverly Way",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "11 AM - 1 PM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Wellington Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Wembley Drive",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "North"
+      },
+      "location": "Callan to Morton Callan to Gellert"
+    },
+    {
+      "street": "Werner Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Wessix Court",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Westbrae Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM"
+      },
+      "location": null
+    },
+    {
+      "street": "Westbrook Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "West Cavour Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Westdale Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Westfield Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Westhaven Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Westlake Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 12:00 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 12:00 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Westlawn Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Westline Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "West Market Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "West Moltke Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Westmoor Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": "Terrace View to Skyline N/A"
+    },
+    {
+      "street": "Weston Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Westpark Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Westridge Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "12:00 PM - 2 PM",
+        "side": "North"
+      },
+      "location": "Palisades to Skyline Southgate and South Mayfair"
+    },
+    {
+      "street": "Whittier Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Wildwood Avenue",
+      "odd_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "location": "City Limit to Southgate Southgate to South Mayfair - Even Addresses only South Mayfair to City Limit - Odd Addresses only"
+    },
+    {
+      "street": "Willits Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": "John Daly to North Parkview South Parkview to South End"
+    },
+    {
+      "street": "Wilshire Avenue",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "12:00 PM - 2 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Wilshire Court",
+      "odd_side": null,
+      "even_side": {
+        "day": "Tuesday",
+        "time": "1 PM - 3 PM",
+        "side": "North"
+      },
+      "location": "All Addresses are Even"
+    },
+    {
+      "street": "Wilson Street",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "8 AM - 10 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "8 AM - 10 AM",
+        "side": "South"
+      },
+      "location": "San Jose to Mission San Jose to San Francisco City limits"
+    },
+    {
+      "street": "Winchester Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "6 AM - 8 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "6 AM - 8 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Windsor Drive",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Monday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Woodland Avenue",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Woodrow Street",
+      "odd_side": {
+        "day": "Friday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": "Knowles to North Parkview South Parkview to South End"
+    },
+    {
+      "street": "Woodside Avenue",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "11 AM - 1 PM",
+        "side": "South"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "location": null
+    },
+    {
+      "street": "Wyandotte Avenue",
+      "odd_side": {
+        "day": "Friday",
+        "time": "6 AM - 8 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Thursday",
+        "time": "6 AM - 8 AM",
+        "side": "West"
+      },
+      "location": "Gambetta to Castle Teresa to East Market Chester to Hoffman Price to East Moltke Bismark to Gambetta"
+    },
+    {
+      "street": "York Street",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "7 AM - 9 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "10 AM - 12:00 PM",
+        "side": "South"
+      },
+      "location": null
+    },
+    {
+      "street": "Zita Manor",
+      "odd_side": {
+        "day": "Thursday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "location": null
+    },
+    {
+      "street": "Martin Trail",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Farrier Place",
+      "odd_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "East"
+      },
+      "even_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "West"
+      },
+      "location": null
+    },
+    {
+      "street": "Steve Courter Way",
+      "odd_side": {
+        "day": "Wednesday",
+        "time": "9 AM - 11 AM",
+        "side": "North"
+      },
+      "even_side": {
+        "day": "Tuesday",
+        "time": "9 AM - 11 AM",
+        "side": "South"
+      },
+      "location": null
+    }
+  ]
+}
