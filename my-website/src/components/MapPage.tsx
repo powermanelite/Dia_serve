@@ -564,42 +564,43 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
                 </div>
                 <div className="sf-schedules">
                   {sfByLimits.map(({ limits, features }) => (
-                    <div key={limits} className="sf-limits-group">
-                      <span className="sf-limits-label">{limits}</span>
-                      {features.map((f, i) => (
-                        <div key={i} className="sf-schedule-row">
-                          <span className="sf-schedule-side">{f.properties.blockside}</span>
-                          <div className="sf-schedule-info">
-                            <span className="sweep-side-day">{f.properties.fullname}</span>
-                            <span className="sweep-side-time">
-                              {formatSFHour(f.properties.fromhour)} – {formatSFHour(f.properties.tohour)}
-                            </span>
+                    <div key={limits} className="sf-limits-entry">
+                      <div className="sf-limits-group">
+                        <span className="sf-limits-label">{limits}</span>
+                        {features.map((f, i) => (
+                          <div key={i} className="sf-schedule-row">
+                            <span className="sf-schedule-side">{f.properties.blockside}</span>
+                            <div className="sf-schedule-info">
+                              <span className="sweep-side-day">{f.properties.fullname}</span>
+                              <span className="sweep-side-time">
+                                {formatSFHour(f.properties.fromhour)} – {formatSFHour(f.properties.tohour)}
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
+                      {onAddToCalendar && (
+                        <button
+                          className="sweep-add-cal-btn"
+                          onClick={() => onAddToCalendar({
+                            street: `${selectedSFCorridor} (${limits})`,
+                            oddSide: null,
+                            evenSide: null,
+                            sides: features.map((f) => ({
+                              label: f.properties.blockside,
+                              day: WEEKDAY_FULL[f.properties.weekday] ?? f.properties.weekday,
+                              time: `${formatSFHour(f.properties.fromhour)} – ${formatSFHour(f.properties.tohour)}`,
+                            })),
+                          })}
+                        >
+                          Add to Calendar
+                        </button>
+                      )}
                     </div>
                   ))}
                 </div>
                 <div className="sweep-detail-footer">
                   {sfIsToday && <div className="sweep-today-badge">Sweeping today!</div>}
-                  {onAddToCalendar && sfByLimits.map(({ limits, features }) => (
-                    <button
-                      key={limits}
-                      className="sweep-add-cal-btn"
-                      onClick={() => onAddToCalendar({
-                        street: `${selectedSFCorridor} (${limits})`,
-                        oddSide: null,
-                        evenSide: null,
-                        sides: features.map((f) => ({
-                          label: f.properties.blockside,
-                          day: WEEKDAY_FULL[f.properties.weekday] ?? f.properties.weekday,
-                          time: `${formatSFHour(f.properties.fromhour)} – ${formatSFHour(f.properties.tohour)}`,
-                        })),
-                      })}
-                    >
-                      Add to Calendar
-                    </button>
-                  ))}
                 </div>
               </div>
             )}
