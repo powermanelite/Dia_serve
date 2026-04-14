@@ -16,4 +16,6 @@ export interface SweepingCalendarRequest {
   street: string;
   oddSide: { day?: string; time?: string; raw?: string } | null;
   evenSide: { day?: string; time?: string; raw?: string } | null;
+  // Optional for SF: array of arbitrary sides (blockside label, full day name, time range)
+  sides?: Array<{ label: string; day: string; time: string }>;
 }

@@ -91,11 +91,11 @@
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 14px;
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   max-height: 600px;
 }
 
@@ -145,14 +145,14 @@
   background: var(--color-primary-light);
   border: 1px solid rgba(99,102,241,0.2);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 10px;
 }
 
 .sweep-detail-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
 }
 
 .sweep-detail-name {
@@ -183,7 +183,7 @@
 .sweep-detail-loc {
   font-size: 0.8rem;
   color: var(--color-text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 6px;
   font-style: italic;
 }
 
@@ -226,12 +226,12 @@
 }
 
 .sweep-today-badge {
-  margin-top: 10px;
+  margin-top: 6px;
   background: #FEF3C7;
   color: #92400E;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 20px;
   text-align: center;
   border: 1px solid #FDE68A;
@@ -312,14 +312,54 @@
 .sf-schedules {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 10px;
+  gap: 4px;
+  margin-bottom: 6px;
+  max-height: 160px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 4px;
+}
+
+.sf-schedules::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sf-schedules::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sf-schedules::-webkit-scrollbar-thumb {
+  background: rgba(99,102,241,0.3);
+  border-radius: 2px;
+}
+
+.sf-schedules::-webkit-scrollbar-thumb:hover {
+  background: rgba(99,102,241,0.6);
+}
+
+.sf-limits-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 5px 8px;
+  background: rgba(99,102,241,0.05);
+  border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-primary);
+}
+
+.sf-limits-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 2px;
 }
 
 .sf-schedule-row {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 6px;
 }
 
 .sf-schedule-side {
@@ -342,16 +382,27 @@
   gap: 2px;
 }
 
+/* ── Detail footer (today badge + calendar buttons) ── */
+.sweep-detail-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.sweep-detail-footer .sweep-today-badge {
+  margin-top: 0;
+}
+
 /* ── Add to Calendar button ── */
 .sweep-add-cal-btn {
-  margin-top: 10px;
   width: 100%;
-  padding: 8px 14px;
+  padding: 5px 12px;
   background: var(--color-primary);
   color: #fff;
   border: none;
   border-radius: var(--radius-sm);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
