@@ -337,6 +337,12 @@
   background: rgba(99,102,241,0.6);
 }
 
+.sf-limits-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
 .sf-limits-group {
   display: flex;
   flex-direction: column;
