@@ -362,6 +362,16 @@
   margin-bottom: 2px;
 }
 
+.sf-limits-group--clickable {
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.sf-limits-group--clickable:hover {
+  background: rgba(99,102,241,0.12);
+  border-color: var(--color-primary);
+}
+
 .sf-schedule-row {
   display: flex;
   align-items: flex-start;

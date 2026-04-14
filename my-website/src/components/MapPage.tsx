@@ -292,8 +292,10 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
         const road = geo?.address?.road;
 
         if (!road) {
-          pin.setPopupContent('<strong>No street found</strong><br/>Try clicking closer to a road.');
-          setPinStatus('not-found');
+          pin.setPopupContent('<strong>No sweeping data</strong><br/><span style="font-size:0.85em;color:#666">No street found near this point.</span>');
+          setSelectedStreet(null);
+          setSearch('');
+          setPinStatus('no-match');
           return;
         }
 
@@ -314,7 +316,9 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
           setSearch(match.street);
           setPinStatus('found');
         } else {
-          pin.setPopupContent(`<div><strong>${road}</strong><br/><span style="font-size:0.85em;color:#666">No sweeping data for this street in Daly City schedule.</span></div>`);
+          pin.setPopupContent('<strong>No sweeping data</strong><br/><span style="font-size:0.85em;color:#666">This street is not in the Daly City sweeping schedule.</span>');
+          setSelectedStreet(null);
+          setSearch('');
           setPinStatus('no-match');
         }
       } catch {
@@ -379,6 +383,102 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [city, data, sfData]);
+
+  // ── Forward-geocode a Daly City street and drop a pin on it ──────
+  async function pinStreetOnMap(entry: StreetEntry) {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?street=${encodeURIComponent(entry.street)}&city=Daly+City&state=CA&country=US&format=json&limit=1`
+      );
+      if (!res.ok) return;
+      const results = await res.json();
+      if (!Array.isArray(results) || !results.length) return;
+
+      const lat = parseFloat(results[0].lat);
+      const lng = parseFloat(results[0].lon);
+      if (isNaN(lat) || isNaN(lng)) return;
+
+      if (droppedPinRef.current) {
+        droppedPinRef.current.remove();
+        droppedPinRef.current = null;
+      }
+
+      const pin = L.marker([lat, lng], { icon: DEFAULT_ICON }).addTo(map);
+      droppedPinRef.current = pin;
+      map.setView([lat, lng], 16, { animate: false });
+
+      pin.bindPopup(`
+        <div style="min-width:200px">
+          <strong>${entry.street}</strong>
+          ${entry.location ? `<br/><em style="font-size:0.85em;color:#666">${entry.location}</em>` : ''}
+          <hr style="margin:6px 0;border:none;border-top:1px solid #ddd"/>
+          <div style="font-size:0.85em">
+            <strong>Odd Side:</strong> ${entry.odd_side ? (entry.odd_side.day || entry.odd_side.raw || 'N/A') + (entry.odd_side.time ? ' ' + entry.odd_side.time : '') : 'No sweeping'}<br/>
+            <strong>Even Side:</strong> ${entry.even_side ? (entry.even_side.day || entry.even_side.raw || 'N/A') + (entry.even_side.time ? ' ' + entry.even_side.time : '') : 'No sweeping'}
+          </div>
+          ${isScheduledToday(entry) ? '<div style="margin-top:6px;background:#FEF3C7;color:#92400E;padding:4px 8px;border-radius:12px;font-size:0.8em;font-weight:700;text-align:center">Sweeping today!</div>' : ''}
+        </div>`).openPopup();
+    } catch {
+      // geocode failed silently — detail panel still shows in sidebar
+    }
+  }
+
+  // ── Pin an SF corridor using its GeoJSON geometry (no geocoding needed) ──
+  function pinCorridorOnMap(features: SFFeature[]) {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+
+    const firstFeature = features.find(f => f.geometry?.coordinates && f.geometry.coordinates.length >= 2);
+    if (!firstFeature) return;
+
+    const coords = firstFeature.geometry.coordinates;
+    const midIdx = Math.floor(coords.length / 2);
+    const lat = coords[midIdx][1];
+    const lng = coords[midIdx][0];
+
+    if (droppedPinRef.current) {
+      droppedPinRef.current.remove();
+      droppedPinRef.current = null;
+    }
+
+    const pin = L.marker([lat, lng], { icon: DEFAULT_ICON }).addTo(map);
+    droppedPinRef.current = pin;
+    map.setView([lat, lng], 16, { animate: false });
+
+    const corridor = firstFeature.properties.corridor;
+    const isToday = features.some(isScheduledTodaySF);
+
+    // Group by limits, deduplicate by blockside+fromhour
+    const byLimits = new Map<string, SFFeature[]>();
+    for (const f of features) {
+      if (!byLimits.has(f.properties.limits)) byLimits.set(f.properties.limits, []);
+      byLimits.get(f.properties.limits)!.push(f);
+    }
+
+    const content = [...byLimits.entries()].map(([limits, lf]) => {
+      const unique = [...new Map(lf.map(f =>
+        [`${f.properties.blockside}-${f.properties.fullname}-${f.properties.fromhour}`, f]
+      )).values()];
+      const rows = unique.map(f =>
+        `<div style="margin-bottom:2px"><strong>${f.properties.blockside}:</strong> ${f.properties.fullname} ${formatSFHour(f.properties.fromhour)}–${formatSFHour(f.properties.tohour)}</div>`
+      ).join('');
+      return `
+        <div style="margin-bottom:6px">
+          <em style="font-size:0.78em;color:#888;text-transform:uppercase;letter-spacing:0.03em">${limits}</em>
+          <div style="font-size:0.83em;margin-top:2px">${rows}</div>
+        </div>`;
+    }).join('');
+
+    pin.bindPopup(`
+      <div style="min-width:200px;max-height:240px;overflow-y:auto">
+        <strong>${corridor}</strong>
+        <hr style="margin:6px 0;border:none;border-top:1px solid #ddd"/>
+        ${content}
+        ${isToday ? '<div style="margin-top:4px;background:#FEF3C7;color:#92400E;padding:4px 8px;border-radius:12px;font-size:0.8em;font-weight:700;text-align:center">Sweeping today!</div>' : ''}
+      </div>`).openPopup();
+  }
 
   // ── Derived list data ──────────────────────────────────────────
 
@@ -565,7 +665,14 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
                 <div className="sf-schedules">
                   {sfByLimits.map(({ limits, features }) => (
                     <div key={limits} className="sf-limits-entry">
-                      <div className="sf-limits-group">
+                      <div
+                        className="sf-limits-group sf-limits-group--clickable"
+                        onClick={() => pinCorridorOnMap(features)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => e.key === 'Enter' && pinCorridorOnMap(features)}
+                        title="Click to pin this block on the map"
+                      >
                         <span className="sf-limits-label">{limits}</span>
                         {features.map((f, i) => (
                           <div key={i} className="sf-schedule-row">
@@ -618,7 +725,7 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
                       <button
                         key={`${entry.street}-${i}`}
                         className={`sweep-item${selectedStreet === entry ? ' sweep-item--active' : ''}${isScheduledToday(entry) ? ' sweep-item--today' : ''}`}
-                        onClick={() => setSelectedStreet(entry)}
+                        onClick={() => { setSelectedStreet(entry); pinStreetOnMap(entry); }}
                       >
                         <span className="sweep-item-name">{entry.street}</span>
                         <span className="sweep-item-preview">{formatSide(entry.odd_side, 'Odd')}</span>
@@ -641,7 +748,7 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
                       <button
                         key={corridor}
                         className={`sweep-item${selectedSFCorridor === corridor ? ' sweep-item--active' : ''}${features.some(isScheduledTodaySF) ? ' sweep-item--today' : ''}`}
-                        onClick={() => setSelectedSFCorridors(features)}
+                        onClick={() => { setSelectedSFCorridors(features); pinCorridorOnMap(features); }}
                       >
                         <span className="sweep-item-name">{corridor}</span>
                         <span className="sweep-item-preview">
