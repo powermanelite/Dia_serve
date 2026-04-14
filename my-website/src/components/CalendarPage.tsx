@@ -147,19 +147,23 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     if (!sweepingRequest) return;
 
     const newEvents: ScheduledEvent[] = [];
-    const sides = [
-      { label: 'Odd side', side: sweepingRequest.oddSide },
-      { label: 'Even side', side: sweepingRequest.evenSide },
-    ];
 
-    for (const { label, side } of sides) {
-      if (!side?.day) continue;
+    // SF format: sides array with arbitrary blockside labels
+    const sidesNorm: Array<{ label: string; day: string; time: string }> = sweepingRequest.sides
+      ? sweepingRequest.sides
+      : [
+          ...(sweepingRequest.oddSide?.day ? [{ label: 'Odd side', day: sweepingRequest.oddSide.day, time: sweepingRequest.oddSide.time ?? '' }] : []),
+          ...(sweepingRequest.evenSide?.day ? [{ label: 'Even side', day: sweepingRequest.evenSide.day, time: sweepingRequest.evenSide.time ?? '' }] : []),
+        ];
+
+    for (const { label, day, time } of sidesNorm) {
+      if (!day) continue;
       // Handle slash-separated days like "Monday/Thursday"
-      const dayNames = side.day.split('/').map((d) => d.trim());
+      const dayNames = day.split('/').map((d) => d.trim());
       for (const dayName of dayNames) {
         const dates = getUpcomingDatesForDayInYear(dayName);
-        const timeSlot = parseTimeSlot(side.time ?? undefined);
-        const endTimeSlot = parseEndTimeSlot(side.time ?? undefined, timeSlot);
+        const timeSlot = parseTimeSlot(time || undefined);
+        const endTimeSlot = parseEndTimeSlot(time || undefined, timeSlot);
         for (const date of dates) {
           // Skip if already scheduled
           if (newEvents.some((e) => e.date === date && e.timeSlot === timeSlot && e.streetName === sweepingRequest.street)) continue;
@@ -170,7 +174,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
             email: '',
             timeSlot,
             endTimeSlot,
-            message: `${label} - ${dayName} ${side.time || ''}`.trim(),
+            message: `${label} - ${dayName} ${time}`.trim(),
             isSweeping: true,
             streetName: sweepingRequest.street,
           });
