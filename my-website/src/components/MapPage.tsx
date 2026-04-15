@@ -125,6 +125,11 @@ function findClosestSFEntry(lat: number, lng: number, entries: NormalizedEntry[]
   return minDist <= MAX_DIST ? closest : null;
 }
 
+/** Returns a meaningful side label; falls back to "Side N" when block_side is null. */
+function sideLabel(blockSide: string | null, idx: number): string {
+  return blockSide ?? `Side ${idx + 1}`;
+}
+
 // ── Component ────────────────────────────────────────────────────
 interface MapPageProps {
   onAddToCalendar?: (request: SweepingCalendarRequest) => void;
@@ -271,8 +276,8 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
               [`${e.block_side}-${e.weekdays.join(',')}-${e.start_hour}`, e]
             )).values()];
             const isToday = limitEntries.some(e => e.weekdays.includes(getTodayDay()));
-            const rows = unique.map(e =>
-              `<div style="margin-bottom:3px"><strong>${e.block_side}:</strong> ${formatScheduleDescription(e.weekdays, e.week_pattern)} ${formatTimeRange(e.start_hour, e.end_hour)}</div>`
+            const rows = unique.map((e, i) =>
+              `<div style="margin-bottom:3px"><strong>${sideLabel(e.block_side, i)}:</strong> ${formatScheduleDescription(e.weekdays, e.week_pattern)} ${formatTimeRange(e.start_hour, e.end_hour)}</div>`
             ).join('');
             pin.setPopupContent(`
               <div style="min-width:200px">
@@ -309,8 +314,8 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
           const entries = dcStreetMap.get(matchName)!;
           const blockLimits = entries[0]?.block_limits;
           const isToday = entries.some(e => e.weekdays.includes(getTodayDay()));
-          const sideRows = entries.map(e =>
-            `<div style="margin-bottom:2px"><strong>${e.block_side}:</strong> ${e.weekdays.join(', ')}${e.start_hour !== null ? ' ' + formatTimeRange(e.start_hour, e.end_hour) : ''}</div>`
+          const sideRows = entries.map((e, i) =>
+            `<div style="margin-bottom:2px"><strong>${sideLabel(e.block_side, i)}:</strong> ${e.weekdays.join(', ')}${e.start_hour !== null ? ' ' + formatTimeRange(e.start_hour, e.end_hour) : ''}</div>`
           ).join('');
           pin.setPopupContent(`
             <div style="min-width:200px">
@@ -449,8 +454,8 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
 
       const blockLimits = entries[0]?.block_limits;
       const isToday = entries.some(e => e.weekdays.includes(getTodayDay()));
-      const sideRows = entries.map(e =>
-        `<div style="margin-bottom:2px"><strong>${e.block_side}:</strong> ${e.weekdays.join(', ')}${e.start_hour !== null ? ' ' + formatTimeRange(e.start_hour, e.end_hour) : ''}</div>`
+      const sideRows = entries.map((e, i) =>
+        `<div style="margin-bottom:2px"><strong>${sideLabel(e.block_side, i)}:</strong> ${e.weekdays.join(', ')}${e.start_hour !== null ? ' ' + formatTimeRange(e.start_hour, e.end_hour) : ''}</div>`
       ).join('');
 
       pin.bindPopup(`
@@ -502,8 +507,8 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
       const unique = [...new Map(lEntries.map(e =>
         [`${e.block_side}-${e.weekdays.join(',')}-${e.start_hour}`, e]
       )).values()];
-      const rows = unique.map(e =>
-        `<div style="margin-bottom:2px"><strong>${e.block_side}:</strong> ${formatScheduleDescription(e.weekdays, e.week_pattern)} ${formatTimeRange(e.start_hour, e.end_hour)}</div>`
+      const rows = unique.map((e, i) =>
+        `<div style="margin-bottom:2px"><strong>${sideLabel(e.block_side, i)}:</strong> ${formatScheduleDescription(e.weekdays, e.week_pattern)} ${formatTimeRange(e.start_hour, e.end_hour)}</div>`
       ).join('');
       return `
         <div style="margin-bottom:6px">
@@ -658,7 +663,7 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                 <div className="sweep-detail-sides">
                   {selectedDCEntries.map((e, i) => (
                     <div key={i} className="sweep-side">
-                      <span className="sweep-side-label">{e.block_side} Side</span>
+                      <span className="sweep-side-label">{e.block_side ? `${e.block_side} Side` : `Side ${i + 1}`}</span>
                       {e.weekdays.length > 0 ? (
                         <>
                           <span className="sweep-side-day">{e.weekdays.join(', ')}</span>
@@ -680,8 +685,8 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                     className="sweep-add-cal-btn"
                     onClick={() => onAddToCalendar({
                       street: selectedDCStreetName,
-                      sides: selectedDCEntries.map(e => ({
-                        label: `${e.block_side} side`,
+                      sides: selectedDCEntries.map((e, i) => ({
+                        label: e.block_side ? `${e.block_side} side` : `Side ${i + 1}`,
                         day: e.weekdays.join('/'),
                         time: formatTimeRange(e.start_hour, e.end_hour),
                       })),
@@ -707,7 +712,7 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                     <span className="sf-limits-label">{pinnedSFLimitEntries[0]?.block_limits ?? ''}</span>
                     {pinnedSFLimitEntries.map((e: NormalizedEntry, i: number) => (
                       <div key={i} className="sf-schedule-row">
-                        <span className="sf-schedule-side">{e.block_side}</span>
+                        <span className="sf-schedule-side">{sideLabel(e.block_side, i)}</span>
                         <div className="sf-schedule-info">
                           <span className="sweep-side-day">{formatScheduleDescription(e.weekdays, e.week_pattern)}</span>
                           {e.start_hour !== null && (
@@ -748,7 +753,7 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                           <span className="sf-limits-label">{limits}</span>
                           {limitsEntries.map((e: NormalizedEntry, i: number) => (
                             <div key={i} className="sf-schedule-row">
-                              <span className="sf-schedule-side">{e.block_side}</span>
+                              <span className="sf-schedule-side">{sideLabel(e.block_side, i)}</span>
                               <div className="sf-schedule-info">
                                 <span className="sweep-side-day">{formatScheduleDescription(e.weekdays, e.week_pattern)}</span>
                                 {e.start_hour !== null && (
@@ -784,8 +789,8 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
               </div>
             )}
 
-            {/* Street list */}
-            <div className="sweep-list">
+            {/* Street list — hidden when a detail panel is active */}
+            <div className={`sweep-list${selectedDCStreetName || selectedSFCorridorName ? ' sweep-list--hidden' : ''}`}>
               {!normalizedData ? (
                 <p className="sweep-loading">Loading schedule data...</p>
               ) : !showDC && !showSF ? (
@@ -810,7 +815,7 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                           </span>
                           <span className="sweep-item-preview">
                             {entries[0]
-                              ? `${entries[0].block_side}: ${entries[0].weekdays.join(', ')}${entries[0].start_hour !== null ? ' ' + formatTimeRange(entries[0].start_hour, entries[0].end_hour) : ''}`
+                              ? `${sideLabel(entries[0].block_side, 0)}: ${entries[0].weekdays.join(', ')}${entries[0].start_hour !== null ? ' ' + formatTimeRange(entries[0].start_hour, entries[0].end_hour) : ''}`
                               : ''}
                           </span>
                           {entries[0]?.block_limits && (
