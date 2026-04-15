@@ -359,6 +359,11 @@
   color: var(--color-primary);
 }
 
+.planner-event-btn--map:hover {
+  background: rgba(16,185,129,0.12);
+  color: #059669;
+}
+
 .planner-event-btn--delete:hover {
   background: rgba(239,68,68,0.12);
   color: #EF4444;

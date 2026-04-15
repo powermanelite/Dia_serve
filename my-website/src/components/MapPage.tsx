@@ -92,7 +92,7 @@ function matchStreetName(geocodedName: string, streetMap: Map<string, Normalized
   }
   for (const [name] of streetMap) {
     const en = normStreet(name);
-    if (en && (normRoad.includes(en) || en.includes(normRoad))) return name;
+    if (en && en.length >= 3 && normRoad.length >= 3 && (normRoad.includes(en) || en.includes(normRoad))) return name;
   }
   return null;
 }
@@ -128,9 +128,11 @@ function findClosestSFEntry(lat: number, lng: number, entries: NormalizedEntry[]
 // ── Component ────────────────────────────────────────────────────
 interface MapPageProps {
   onAddToCalendar?: (request: SweepingCalendarRequest) => void;
+  pinRequest?: string | null;
+  onPinHandled?: () => void;
 }
 
-function MapPage({ onAddToCalendar }: MapPageProps) {
+function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const droppedPinRef = useRef<L.Marker | null>(null);
@@ -345,8 +347,8 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
       lookupAndPin(e.latlng.lat, e.latlng.lng, DEFAULT_ICON);
     });
 
-    // Auto-drop pin on user location once SF geometry data is ready
-    if (sfEntries.length > 0 && navigator.geolocation) {
+    // Auto-drop pin on user location — skip if a calendar pin request is pending
+    if (sfEntries.length > 0 && navigator.geolocation && !pinRequest) {
       setPinStatus('locating');
       navigator.geolocation.getCurrentPosition(
         (pos) => {
@@ -367,6 +369,58 @@ function MapPage({ onAddToCalendar }: MapPageProps) {
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dcStreetMap, sfEntries]);
+
+  // ── Auto-pin when navigating from calendar ────────────────────────
+  useEffect(() => {
+    if (!pinRequest || !mapInstanceRef.current) return;
+
+    // "Corridor Name (block limits)" → split corridor from optional limit
+    const parenMatch = pinRequest.match(/^(.+?)\s*\((.+)\)$/);
+    const corridorName = parenMatch ? parenMatch[1].trim() : pinRequest.trim();
+    const limitHint   = parenMatch ? parenMatch[2].trim() : null;
+
+    // SF path first — corridor names from calendar are exact SF keys
+    if (sfCorridorMap.size && sfCorridorMap.has(corridorName)) {
+      const allEntries = sfCorridorMap.get(corridorName)!;
+      setSelectedSFCorridorName(corridorName);
+      setSelectedDCStreetName(null);
+
+      if (limitHint) {
+        const limitEntries = allEntries.filter(e => e.block_limits === limitHint);
+        if (limitEntries.length > 0) {
+          const unique = [...new Map(limitEntries.map(e =>
+            [`${e.block_side}-${e.weekdays.join(',')}-${e.start_hour}`, e]
+          )).values()];
+          setPinnedSFLimitEntries(unique);
+          pinCorridorOnMap(limitEntries);
+          onPinHandled?.();
+          return;
+        }
+      }
+
+      // No specific limit — show the full corridor
+      setPinnedSFLimitEntries(null);
+      pinCorridorOnMap(allEntries);
+      onPinHandled?.();
+      return;
+    }
+
+    // DC path — use exact match first, fuzzy only as fallback
+    if (dcStreetMap.size) {
+      const dcMatch = dcStreetMap.has(corridorName)
+        ? corridorName
+        : matchStreetName(corridorName, dcStreetMap);
+      if (dcMatch) {
+        const entries = dcStreetMap.get(dcMatch)!;
+        setSelectedDCStreetName(dcMatch);
+        setSelectedSFCorridorName(null);
+        setPinnedSFLimitEntries(null);
+        pinStreetOnMap(dcMatch, entries);
+        onPinHandled?.();
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pinRequest, dcStreetMap, sfCorridorMap]);
 
   // ── Forward-geocode a DC street and drop a pin on it ─────────────
   async function pinStreetOnMap(streetName: string, entries: NormalizedEntry[]) {

@@ -15,10 +15,16 @@ function App() {
   const [activeTab, setActiveTab] = useState<Tab>('home');
   const [sweepingRequest, setSweepingRequest] = useState<SweepingCalendarRequest | null>(null);
   const [events, setEvents] = useState<ScheduledEvent[]>([]);
+  const [mapPinRequest, setMapPinRequest] = useState<string | null>(null);
 
   function handleAddToCalendar(request: SweepingCalendarRequest) {
     setSweepingRequest(request);
     setActiveTab('calendar');
+  }
+
+  function handleViewOnMap(streetName: string) {
+    setMapPinRequest(streetName);
+    setActiveTab('map');
   }
 
   return (
@@ -47,9 +53,10 @@ function App() {
             onEventsChange={setEvents}
             sweepingRequest={sweepingRequest}
             onSweepingHandled={() => setSweepingRequest(null)}
+            onViewOnMap={handleViewOnMap}
           />
         )}
-        {activeTab === 'map' && <MapPage onAddToCalendar={handleAddToCalendar} />}
+        {activeTab === 'map' && <MapPage onAddToCalendar={handleAddToCalendar} pinRequest={mapPinRequest} onPinHandled={() => setMapPinRequest(null)} />}
       </main>
     </div>
   );

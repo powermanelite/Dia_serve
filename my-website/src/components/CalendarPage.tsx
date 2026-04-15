@@ -184,9 +184,10 @@ interface CalendarPageProps {
   onEventsChange: React.Dispatch<React.SetStateAction<ScheduledEvent[]>>;
   sweepingRequest?: SweepingCalendarRequest | null;
   onSweepingHandled?: () => void;
+  onViewOnMap?: (streetName: string) => void;
 }
 
-function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandled }: CalendarPageProps) {
+function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandled, onViewOnMap }: CalendarPageProps) {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -535,6 +536,16 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                           </div>
                           {!isPastSelected && (
                             <div className="planner-event-actions">
+                              {ev.isSweeping && ev.streetName && onViewOnMap && (
+                                <button
+                                  className="planner-event-btn planner-event-btn--map"
+                                  onClick={(e) => { e.stopPropagation(); onViewOnMap(ev.streetName!); }}
+                                  aria-label="View on map"
+                                  title="View on map"
+                                >
+                                  <MapPinIcon />
+                                </button>
+                              )}
                               <button
                                 className="planner-event-btn planner-event-btn--edit"
                                 onClick={(e) => { e.stopPropagation(); openModalForEdit(ev); }}
@@ -759,6 +770,15 @@ function EditIcon() {
   );
 }
 
+
+function MapPinIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
 
 function TrashIcon() {
   return (
