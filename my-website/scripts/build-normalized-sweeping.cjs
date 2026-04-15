@@ -93,7 +93,7 @@ function parseDCTimeRange(raw) {
 function transformDalyCity(dc) {
   const entries = [];
   for (const s of dc.streets) {
-    for (const [, sideObj] of [['odd', s.odd_side], ['even', s.even_side]]) {
+    for (const [sideKey, sideObj] of [['odd', s.odd_side], ['even', s.even_side]]) {
       if (!sideObj) continue;
       // Skip entries managed by another city (no real schedule)
       if (sideObj.note) continue;
@@ -106,7 +106,7 @@ function transformDalyCity(dc) {
         city:              'Daly City',
         street_name:       s.street,
         block_limits:      s.location || null,
-        block_side:        sideObj.side || null,
+        block_side:        sideKey === 'odd' ? 'Odd' : 'Even',
         weekdays:          sideObj.day.split('/').map(d => d.trim()),
         week_pattern:      [1, 2, 3, 4, 5],  // DC source has no weekly-pattern data
         start_hour,
@@ -138,7 +138,7 @@ function transformSanFrancisco(sf) {
       city:              'San Francisco',
       street_name:       p.corridor,
       block_limits:      p.limits || null,
-      block_side:        p.blockside || null,
+      block_side:        p.blockside || (p.cnnrightleft === 'R' ? 'Right' : p.cnnrightleft === 'L' ? 'Left' : null),
       weekdays:          [WEEKDAY_FULL[p.weekday] || p.weekday],
       week_pattern,
       start_hour:        parseInt(p.fromhour, 10),

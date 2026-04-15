@@ -256,6 +256,10 @@
   min-height: 0;
 }
 
+.sweep-list--hidden {
+  display: none;
+}
+
 .sweep-loading,
 .sweep-empty {
   font-size: 0.9rem;
