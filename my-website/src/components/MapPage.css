@@ -124,6 +124,12 @@
   box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
 }
 
+.sweep-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
 .sweep-toggle {
   display: flex;
   align-items: center;
@@ -139,6 +145,9 @@
   height: 16px;
   cursor: pointer;
 }
+
+.sweep-toggle--dc input { accent-color: #6366F1; }
+.sweep-toggle--sf input { accent-color: #10B981; }
 
 /* ── Detail panel ── */
 .sweep-detail {
@@ -284,10 +293,44 @@
   border-left: 3px solid #F59E0B;
 }
 
+.sweep-list-section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 6px 4px 4px;
+  margin-top: 4px;
+}
+
+.sweep-list-section-label--dc { color: #6366F1; }
+.sweep-list-section-label--sf { color: #10B981; }
+
 .sweep-item-name {
   font-size: 0.9rem;
   font-weight: 600;
   color: var(--color-text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sweep-item-badge {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.sweep-item-badge--dc {
+  background: #EEF2FF;
+  color: #4F46E5;
+}
+
+.sweep-item-badge--sf {
+  background: #ECFDF5;
+  color: #059669;
 }
 
 .sweep-item-preview {
