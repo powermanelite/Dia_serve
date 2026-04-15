@@ -529,7 +529,11 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
   // ── Derived list data ─────────────────────────────────────────
   const today = getTodayDay();
 
-  const filteredDCStreets = showDC && dcStreetMap.size
+  // When a detail panel is open, lock the list to that city only
+  const listShowDC = selectedSFCorridorName ? false : showDC;
+  const listShowSF = selectedDCStreetName   ? false : showSF;
+
+  const filteredDCStreets = listShowDC && dcStreetMap.size
     ? [...dcStreetMap.entries()]
         .filter(([name, entries]) =>
           name.toLowerCase().includes(search.toLowerCase()) &&
@@ -538,7 +542,7 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
         .map(([name, entries]) => ({ name, entries }))
     : [];
 
-  const filteredSFCorridors = showSF && sfCorridorMap.size
+  const filteredSFCorridors = listShowSF && sfCorridorMap.size
     ? [...sfCorridorMap.entries()]
         .filter(([corridor, entries]) =>
           corridor.toLowerCase().includes(search.toLowerCase()) &&
@@ -657,29 +661,31 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                   <h4 className="sweep-detail-name">{selectedDCStreetName}</h4>
                   <button className="sweep-detail-close" onClick={() => setSelectedDCStreetName(null)}>&times;</button>
                 </div>
-                {selectedDCEntries[0]?.block_limits && (
-                  <p className="sweep-detail-loc">{selectedDCEntries[0].block_limits}</p>
-                )}
-                <div className="sweep-detail-sides">
-                  {selectedDCEntries.map((e, i) => (
-                    <div key={i} className="sweep-side">
-                      <span className="sweep-side-label">{e.block_side ? `${e.block_side} Side` : `Side ${i + 1}`}</span>
-                      {e.weekdays.length > 0 ? (
-                        <>
-                          <span className="sweep-side-day">{e.weekdays.join(', ')}</span>
-                          {e.start_hour !== null && (
-                            <span className="sweep-side-time">{formatTimeRange(e.start_hour, e.end_hour)}</span>
-                          )}
-                        </>
-                      ) : (
-                        <span className="sweep-side-none">No sweeping</span>
-                      )}
-                    </div>
-                  ))}
+                <div className="sweep-detail-body">
+                  {selectedDCEntries[0]?.block_limits && (
+                    <p className="sweep-detail-loc">{selectedDCEntries[0].block_limits}</p>
+                  )}
+                  <div className="sweep-detail-sides">
+                    {selectedDCEntries.map((e, i) => (
+                      <div key={i} className="sweep-side">
+                        <span className="sweep-side-label">{e.block_side ? `${e.block_side} Side` : `Side ${i + 1}`}</span>
+                        {e.weekdays.length > 0 ? (
+                          <>
+                            <span className="sweep-side-day">{e.weekdays.join(', ')}</span>
+                            {e.start_hour !== null && (
+                              <span className="sweep-side-time">{formatTimeRange(e.start_hour, e.end_hour)}</span>
+                            )}
+                          </>
+                        ) : (
+                          <span className="sweep-side-none">No sweeping</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {selectedDCEntries.some(e => e.weekdays.includes(today)) && (
+                    <div className="sweep-today-badge">Sweeping today!</div>
+                  )}
                 </div>
-                {selectedDCEntries.some(e => e.weekdays.includes(today)) && (
-                  <div className="sweep-today-badge">Sweeping today!</div>
-                )}
                 {onAddToCalendar && (
                   <button
                     className="sweep-add-cal-btn"
@@ -706,91 +712,92 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                   <button className="sweep-detail-close" onClick={() => { setSelectedSFCorridorName(null); setPinnedSFLimitEntries(null); }}>&times;</button>
                 </div>
 
-                {pinnedSFLimitEntries ? (
-                  /* Pin-drop view: show only the matched limit block, no scroll */
-                  <div className="sf-limits-group">
-                    <span className="sf-limits-label">{pinnedSFLimitEntries[0]?.block_limits ?? ''}</span>
-                    {pinnedSFLimitEntries.map((e: NormalizedEntry, i: number) => (
-                      <div key={i} className="sf-schedule-row">
-                        <span className="sf-schedule-side">{sideLabel(e.block_side, i)}</span>
-                        <div className="sf-schedule-info">
-                          <span className="sweep-side-day">{formatScheduleDescription(e.weekdays, e.week_pattern)}</span>
-                          {e.start_hour !== null && (
-                            <span className="sweep-side-time">{formatTimeRange(e.start_hour, e.end_hour)}</span>
+                <div className="sweep-detail-body">
+                  {pinnedSFLimitEntries ? (
+                    /* Pin-drop view: show only the matched limit block */
+                    <div className="sf-limits-group">
+                      <span className="sf-limits-label">{pinnedSFLimitEntries[0]?.block_limits ?? ''}</span>
+                      {pinnedSFLimitEntries.map((e: NormalizedEntry, i: number) => (
+                        <div key={i} className="sf-schedule-row">
+                          <span className="sf-schedule-side">{sideLabel(e.block_side, i)}</span>
+                          <div className="sf-schedule-info">
+                            <span className="sweep-side-day">{formatScheduleDescription(e.weekdays, e.week_pattern)}</span>
+                            {e.start_hour !== null && (
+                              <span className="sweep-side-time">{formatTimeRange(e.start_hour, e.end_hour)}</span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    /* List-click view: all limit blocks */
+                    <div className="sf-schedules">
+                      {sfByLimits.map(({ limits, entries: limitsEntries }: { limits: string; entries: NormalizedEntry[] }) => (
+                        <div key={limits} className="sf-limits-entry">
+                          <div
+                            className="sf-limits-group sf-limits-group--clickable"
+                            onClick={() => { setPinnedSFLimitEntries(limitsEntries); pinCorridorOnMap(limitsEntries); }}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(ev) => { if (ev.key === 'Enter') { setPinnedSFLimitEntries(limitsEntries); pinCorridorOnMap(limitsEntries); } }}
+                            title="Click to pin this block on the map"
+                          >
+                            <span className="sf-limits-label">{limits}</span>
+                            {limitsEntries.map((e: NormalizedEntry, i: number) => (
+                              <div key={i} className="sf-schedule-row">
+                                <span className="sf-schedule-side">{sideLabel(e.block_side, i)}</span>
+                                <div className="sf-schedule-info">
+                                  <span className="sweep-side-day">{formatScheduleDescription(e.weekdays, e.week_pattern)}</span>
+                                  {e.start_hour !== null && (
+                                    <span className="sweep-side-time">{formatTimeRange(e.start_hour, e.end_hour)}</span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                          {onAddToCalendar && (
+                            <button
+                              className="sweep-add-cal-btn"
+                              onClick={() => onAddToCalendar({
+                                street: `${selectedSFCorridorName} (${limits})`,
+                                sides: limitsEntries.map((e: NormalizedEntry) => ({
+                                  label: e.block_side ?? 'Side',
+                                  day: e.weekdays.join('/'),
+                                  time: formatTimeRange(e.start_hour, e.end_hour),
+                                })),
+                              })}
+                            >
+                              Add to Calendar
+                            </button>
                           )}
                         </div>
-                      </div>
-                    ))}
-                    {onAddToCalendar && (
-                      <button
-                        className="sweep-add-cal-btn"
-                        onClick={() => onAddToCalendar({
-                          street: `${selectedSFCorridorName} (${pinnedSFLimitEntries[0]?.block_limits ?? ''})`,
-                          sides: pinnedSFLimitEntries.map((e: NormalizedEntry) => ({
-                            label: e.block_side ?? 'Side',
-                            day: e.weekdays.join('/'),
-                            time: formatTimeRange(e.start_hour, e.end_hour),
-                          })),
-                        })}
-                      >
-                        Add to Calendar
-                      </button>
-                    )}
-                  </div>
-                ) : (
-                  /* List-click view: all limit blocks, scrollable */
-                  <div className="sf-schedules">
-                    {sfByLimits.map(({ limits, entries: limitsEntries }: { limits: string; entries: NormalizedEntry[] }) => (
-                      <div key={limits} className="sf-limits-entry">
-                        <div
-                          className="sf-limits-group sf-limits-group--clickable"
-                          onClick={() => { setPinnedSFLimitEntries(limitsEntries); pinCorridorOnMap(limitsEntries); }}
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(ev) => { if (ev.key === 'Enter') { setPinnedSFLimitEntries(limitsEntries); pinCorridorOnMap(limitsEntries); } }}
-                          title="Click to pin this block on the map"
-                        >
-                          <span className="sf-limits-label">{limits}</span>
-                          {limitsEntries.map((e: NormalizedEntry, i: number) => (
-                            <div key={i} className="sf-schedule-row">
-                              <span className="sf-schedule-side">{sideLabel(e.block_side, i)}</span>
-                              <div className="sf-schedule-info">
-                                <span className="sweep-side-day">{formatScheduleDescription(e.weekdays, e.week_pattern)}</span>
-                                {e.start_hour !== null && (
-                                  <span className="sweep-side-time">{formatTimeRange(e.start_hour, e.end_hour)}</span>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                        {onAddToCalendar && (
-                          <button
-                            className="sweep-add-cal-btn"
-                            onClick={() => onAddToCalendar({
-                              street: `${selectedSFCorridorName} (${limits})`,
-                              sides: limitsEntries.map((e: NormalizedEntry) => ({
-                                label: e.block_side ?? 'Side',
-                                day: e.weekdays.join('/'),
-                                time: formatTimeRange(e.start_hour, e.end_hour),
-                              })),
-                            })}
-                          >
-                            Add to Calendar
-                          </button>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
 
-                <div className="sweep-detail-footer">
                   {sfIsToday && <div className="sweep-today-badge">Sweeping today!</div>}
                 </div>
+
+                {pinnedSFLimitEntries && onAddToCalendar && (
+                  <button
+                    className="sweep-add-cal-btn"
+                    onClick={() => onAddToCalendar({
+                      street: `${selectedSFCorridorName} (${pinnedSFLimitEntries[0]?.block_limits ?? ''})`,
+                      sides: pinnedSFLimitEntries.map((e: NormalizedEntry) => ({
+                        label: e.block_side ?? 'Side',
+                        day: e.weekdays.join('/'),
+                        time: formatTimeRange(e.start_hour, e.end_hour),
+                      })),
+                    })}
+                  >
+                    Add to Calendar
+                  </button>
+                )}
               </div>
             )}
 
-            {/* Street list — hidden when a detail panel is active */}
-            <div className={`sweep-list${selectedDCStreetName || selectedSFCorridorName ? ' sweep-list--hidden' : ''}`}>
+            {/* Street list */}
+            <div className="sweep-list">
               {!normalizedData ? (
                 <p className="sweep-loading">Loading schedule data...</p>
               ) : !showDC && !showSF ? (
@@ -800,9 +807,9 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
               ) : (
                 <>
                   {/* Daly City section */}
-                  {showDC && filteredDCStreets.length > 0 && (
+                  {filteredDCStreets.length > 0 && (
                     <>
-                      {showSF && <p className="sweep-list-section-label sweep-list-section-label--dc">Daly City</p>}
+                      {listShowSF && <p className="sweep-list-section-label sweep-list-section-label--dc">Daly City</p>}
                       {filteredDCStreets.slice(0, 50).map(({ name, entries }) => (
                         <button
                           key={name}
@@ -811,7 +818,7 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                         >
                           <span className="sweep-item-name">
                             {name}
-                            {showSF && <span className="sweep-item-badge sweep-item-badge--dc">DC</span>}
+                            {listShowSF && <span className="sweep-item-badge sweep-item-badge--dc">DC</span>}
                           </span>
                           <span className="sweep-item-preview">
                             {entries[0]
@@ -830,9 +837,9 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                   )}
 
                   {/* San Francisco section */}
-                  {showSF && filteredSFCorridors.length > 0 && (
+                  {filteredSFCorridors.length > 0 && (
                     <>
-                      {showDC && <p className="sweep-list-section-label sweep-list-section-label--sf">San Francisco</p>}
+                      {listShowDC && <p className="sweep-list-section-label sweep-list-section-label--sf">San Francisco</p>}
                       {filteredSFCorridors.slice(0, 50).map(({ corridor, entries }) => (
                         <button
                           key={corridor}
@@ -841,7 +848,7 @@ function MapPage({ onAddToCalendar, pinRequest, onPinHandled }: MapPageProps) {
                         >
                           <span className="sweep-item-name">
                             {corridor}
-                            {showDC && <span className="sweep-item-badge sweep-item-badge--sf">SF</span>}
+                            {listShowDC && <span className="sweep-item-badge sweep-item-badge--sf">SF</span>}
                           </span>
                           <span className="sweep-item-preview">
                             {entries[0]
