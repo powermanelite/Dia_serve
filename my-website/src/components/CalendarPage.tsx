@@ -358,9 +358,12 @@ function GcalSignInButton({
   onSignIn: (token: string, user: GcalUser) => void;
   onCalEventsLoad: (evs: ScheduledEvent[]) => void;
 }) {
+  const [error, setError] = useState<string | null>(null);
+
   const login = useGoogleLogin({
     scope: 'https://www.googleapis.com/auth/calendar.events',
     onSuccess: async (tokenResponse) => {
+      setError(null);
       const token = tokenResponse.access_token;
       const [info, calEvents] = await Promise.all([
         fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
@@ -371,11 +374,19 @@ function GcalSignInButton({
       onSignIn(token, { name: info.name, email: info.email, picture: info.picture });
       onCalEventsLoad(calEvents);
     },
+    onError: (err) => setError(err.error_description ?? err.error ?? 'Sign-in failed'),
+    onNonOAuthError: (err) => {
+      if (err.type !== 'popup_closed') setError('Sign-in was blocked or closed');
+    },
   });
+
   return (
-    <button className="gcal-sign-in-btn" onClick={() => login()}>
-      <GoogleCalendarIcon /> Sign in with Google
-    </button>
+    <div className="gcal-sign-in-wrap">
+      <button className="gcal-sign-in-btn" onClick={() => { setError(null); login(); }}>
+        <GoogleCalendarIcon /> Sign in with Google
+      </button>
+      {error && <span className="gcal-sign-in-error">{error}</span>}
+    </div>
   );
 }
 
