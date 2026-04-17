@@ -10,6 +10,7 @@ export interface ScheduledEvent {
   message: string;
   isSweeping?: boolean;
   streetName?: string;
+  gcalEventId?: string;
 }
 
 export interface SweepingCalendarRequest {
