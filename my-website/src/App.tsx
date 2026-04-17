@@ -16,6 +16,8 @@ function App() {
   const [sweepingRequest, setSweepingRequest] = useState<SweepingCalendarRequest | null>(null);
   const [events, setEvents] = useState<ScheduledEvent[]>([]);
   const [mapPinRequest, setMapPinRequest] = useState<string | null>(null);
+  const [gcalToken, setGcalToken] = useState<string | null>(null);
+  const [gcalUser, setGcalUser] = useState<{ name: string; email: string; picture: string } | null>(null);
 
   function handleAddToCalendar(request: SweepingCalendarRequest) {
     setSweepingRequest(request);
@@ -54,6 +56,10 @@ function App() {
             sweepingRequest={sweepingRequest}
             onSweepingHandled={() => setSweepingRequest(null)}
             onViewOnMap={handleViewOnMap}
+            gcalToken={gcalToken}
+            gcalUser={gcalUser}
+            onGcalSignIn={(token, user) => { setGcalToken(token); setGcalUser(user); }}
+            onGcalSignOut={() => { setGcalToken(null); setGcalUser(null); setEvents([]); }}
           />
         )}
         {activeTab === 'map' && <MapPage onAddToCalendar={handleAddToCalendar} pinRequest={mapPinRequest} onPinHandled={() => setMapPinRequest(null)} />}

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 import type { ScheduledEvent, SweepingCalendarRequest } from '../types';
 import './CalendarPage.css';
 
@@ -19,6 +20,35 @@ const ROW_HEIGHT = 56;
 
 function toDateStr(year: number, month: number, day: number): string {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+function parseTimeToHHMM(timeSlot: string): { hours: number; minutes: number } {
+  const match = timeSlot.match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
+  if (!match) return { hours: 9, minutes: 0 };
+  let hours = parseInt(match[1]);
+  const minutes = parseInt(match[2]);
+  const ampm = match[3].toUpperCase();
+  if (ampm === 'PM' && hours !== 12) hours += 12;
+  if (ampm === 'AM' && hours === 12) hours = 0;
+  return { hours, minutes };
+}
+
+function buildGoogleCalendarUrl(params: {
+  date: string;
+  name: string;
+  timeSlot: string;
+  endTimeSlot?: string;
+  message?: string;
+}): string {
+  const { hours: sh, minutes: sm } = parseTimeToHHMM(params.timeSlot);
+  const endSlot = params.endTimeSlot ?? PLANNER_HOURS[Math.min(PLANNER_HOURS.indexOf(params.timeSlot) + 1, PLANNER_HOURS.length - 1)];
+  const { hours: eh, minutes: em } = parseTimeToHHMM(endSlot);
+  const d = params.date.replace(/-/g, '');
+  const start = `${d}T${String(sh).padStart(2, '0')}${String(sm).padStart(2, '0')}00`;
+  const end   = `${d}T${String(eh).padStart(2, '0')}${String(em).padStart(2, '0')}00`;
+  const q = new URLSearchParams({ action: 'TEMPLATE', text: params.name, dates: `${start}/${end}` });
+  if (params.message) q.set('details', params.message);
+  return `https://calendar.google.com/calendar/render?${q.toString()}`;
 }
 
 type Recurrence = 'none' | 'daily' | 'weekly' | 'biweekly' | 'monthly';
@@ -179,15 +209,159 @@ function getCoveredSlots(evs: import('../types').ScheduledEvent[]): Set<string> 
   return covered;
 }
 
+// ── Google Calendar API helpers ──────────────────────────────────────────────
+
+function gcalBody(ev: ScheduledEvent) {
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const { hours: sh, minutes: sm } = parseTimeToHHMM(ev.timeSlot);
+  const endSlot = ev.endTimeSlot ?? PLANNER_HOURS[Math.min(PLANNER_HOURS.indexOf(ev.timeSlot) + 1, PLANNER_HOURS.length - 1)];
+  const { hours: eh, minutes: em } = parseTimeToHHMM(endSlot);
+  const [year, month, day] = ev.date.split('-').map(Number);
+  const iso = (h: number, m: number) => new Date(year, month - 1, day, h, m).toISOString();
+  return {
+    summary: ev.name,
+    description: ev.message || '',
+    start: { dateTime: iso(sh, sm), timeZone: tz },
+    end:   { dateTime: iso(eh, em), timeZone: tz },
+    attendees: [{ email: 'diamond200027@gmail.com' }],
+    reminders: {
+      useDefault: false,
+      overrides: [{ method: 'email', minutes: 1440 }, { method: 'popup', minutes: 30 }],
+    },
+    extendedProperties: {
+      private: {
+        source: 'dia-website',
+        ...(ev.isSweeping && { isSweeping: 'true', streetName: ev.streetName ?? '' }),
+      },
+    },
+  };
+}
+
+async function createGCalEvent(token: string, ev: ScheduledEvent): Promise<string | null> {
+  const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(gcalBody(ev)),
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return data.id as string;
+}
+
+async function patchGCalEvent(token: string, gcalId: string, ev: ScheduledEvent): Promise<void> {
+  await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${gcalId}`, {
+    method: 'PATCH',
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(gcalBody(ev)),
+  });
+}
+
+async function deleteGCalEvent(token: string, gcalId: string): Promise<void> {
+  await fetch(`https://www.googleapis.com/calendar/v3/calendars/primary/events/${gcalId}`, {
+    method: 'DELETE',
+    headers: { Authorization: `Bearer ${token}` },
+  });
+}
+
+async function fetchExistingGCalSweepIds(token: string, street: string): Promise<string[]> {
+  const year = new Date().getFullYear();
+  const params = new URLSearchParams({
+    q: `Street Sweeping: ${street}`,
+    timeMin: new Date(year, 0, 1).toISOString(),
+    timeMax: new Date(year, 11, 31, 23, 59, 59).toISOString(),
+    singleEvents: 'true',
+    maxResults: '500',
+    privateExtendedProperty: 'source=dia-website',
+  });
+  const res = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  return (data.items ?? []).map((item: { id: string }) => item.id);
+}
+
+async function batchCreateGCalEvents(
+  token: string,
+  evs: ScheduledEvent[],
+  chunkSize = 5,
+): Promise<(string | null)[]> {
+  const results: (string | null)[] = [];
+  for (let i = 0; i < evs.length; i += chunkSize) {
+    const chunk = evs.slice(i, i + chunkSize);
+    const ids = await Promise.all(chunk.map((ev) => createGCalEvent(token, ev)));
+    results.push(...ids);
+    if (i + chunkSize < evs.length) await new Promise((r) => setTimeout(r, 200));
+  }
+  return results;
+}
+
+function formatToSlot(dt: Date): string | undefined {
+  if (dt.getMinutes() !== 0) return undefined;
+  const h = dt.getHours();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const displayHour = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  const candidate = `${displayHour}:00 ${ampm}`;
+  return PLANNER_HOURS.includes(candidate) ? candidate : undefined;
+}
+
+async function fetchGCalEvents(token: string): Promise<ScheduledEvent[]> {
+  const year = new Date().getFullYear();
+  const params = new URLSearchParams({
+    timeMin: new Date(year, 0, 1).toISOString(),
+    timeMax: new Date(year, 11, 31, 23, 59, 59).toISOString(),
+    singleEvents: 'true',
+    orderBy: 'startTime',
+    maxResults: '500',
+    privateExtendedProperty: 'source=dia-website',
+  });
+  const res = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  const result: ScheduledEvent[] = [];
+  for (const item of data.items ?? []) {
+    if (!item.start?.dateTime) continue;
+    const startDT = new Date(item.start.dateTime);
+    const timeSlot = formatToSlot(startDT);
+    if (!timeSlot) continue;
+    const endDT = item.end?.dateTime ? new Date(item.end.dateTime) : null;
+    const endTimeSlot = endDT ? formatToSlot(endDT) : undefined;
+    const priv = item.extendedProperties?.private ?? {};
+    const isSweeping = priv.isSweeping === 'true';
+    result.push({
+      id: `gcal-${item.id}`,
+      date: toDateStr(startDT.getFullYear(), startDT.getMonth(), startDT.getDate()),
+      name: item.summary ?? 'Untitled',
+      email: '',
+      timeSlot,
+      endTimeSlot: endTimeSlot !== timeSlot ? endTimeSlot : undefined,
+      message: item.description ?? '',
+      gcalEventId: item.id as string,
+      ...(isSweeping && { isSweeping: true, streetName: priv.streetName || undefined }),
+    });
+  }
+  return result;
+}
+
+interface GcalUser { name: string; email: string; picture: string; }
+
 interface CalendarPageProps {
   events: ScheduledEvent[];
   onEventsChange: React.Dispatch<React.SetStateAction<ScheduledEvent[]>>;
   sweepingRequest?: SweepingCalendarRequest | null;
   onSweepingHandled?: () => void;
   onViewOnMap?: (streetName: string) => void;
+  gcalToken: string | null;
+  gcalUser: GcalUser | null;
+  onGcalSignIn: (token: string, user: GcalUser) => void;
+  onGcalSignOut: () => void;
 }
 
-function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandled, onViewOnMap }: CalendarPageProps) {
+function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandled, onViewOnMap, gcalToken, gcalUser, onGcalSignIn, onGcalSignOut }: CalendarPageProps) {
   const today = new Date();
   const [viewYear, setViewYear] = useState(today.getFullYear());
   const [viewMonth, setViewMonth] = useState(today.getMonth());
@@ -196,6 +370,24 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Partial<ModalState>>({});
   const [sweepingBanner, setSweepingBanner] = useState<string | null>(null);
+
+  // Google Calendar auth (token + user lifted to App.tsx; only sync status is local)
+  const [gcalSyncStatus, setGcalSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
+
+  const loginWithGoogle = useGoogleLogin({
+    scope: 'https://www.googleapis.com/auth/calendar.events',
+    onSuccess: async (tokenResponse) => {
+      const token = tokenResponse.access_token;
+      const [info, calEvents] = await Promise.all([
+        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${token}` },
+        }).then((r) => r.json()),
+        fetchGCalEvents(token),
+      ]);
+      onGcalSignIn(token, { name: info.name, email: info.email, picture: info.picture });
+      onEventsChange(calEvents);
+    },
+  });
 
   // Handle incoming sweeping request from Map page
   useEffect(() => {
@@ -230,21 +422,45 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     }
 
     if (newEvents.length > 0) {
+      // Save locally immediately so the calendar updates right away
       onEventsChange((prev) => {
-        // Remove existing sweeping events for this street to avoid duplicates
         const filtered = prev.filter((e) => !(e.isSweeping && e.streetName === sweepingRequest.street));
         return [...filtered, ...newEvents];
       });
-      // Navigate to the first event's month
       const firstDate = new Date(newEvents[0].date + 'T00:00:00');
       setViewYear(firstDate.getFullYear());
       setViewMonth(firstDate.getMonth());
       setSelectedDate(newEvents[0].date);
-      setSweepingBanner(`Added ${newEvents.length} sweeping events for ${sweepingRequest.street} (through end of ${new Date().getFullYear()})`);
+      const street = sweepingRequest.street;
+      const year = new Date().getFullYear();
+
+      if (gcalToken) {
+        setSweepingBanner(`Scheduling ${newEvents.length} sweeping events for ${street} to Google Calendar…`);
+        const token = gcalToken;
+        (async () => {
+          try {
+            const existingIds = await fetchExistingGCalSweepIds(token, street);
+            await Promise.all(existingIds.map((id) => deleteGCalEvent(token, id).catch(() => {})));
+            const gcalIds = await batchCreateGCalEvents(token, newEvents);
+            onEventsChange((prev) =>
+              prev.map((ev) => {
+                const idx = newEvents.findIndex((ne) => ne.id === ev.id);
+                if (idx !== -1 && gcalIds[idx]) return { ...ev, gcalEventId: gcalIds[idx]! };
+                return ev;
+              })
+            );
+            setSweepingBanner(`✓ Scheduled ${newEvents.length} sweeping events for ${street} to Google Calendar`);
+          } catch {
+            setSweepingBanner(`Added ${newEvents.length} sweeping events for ${street} — could not sync to Google Calendar`);
+          }
+        })();
+      } else {
+        setSweepingBanner(`Added ${newEvents.length} sweeping events for ${street} (through end of ${year})`);
+      }
     }
 
     onSweepingHandled?.();
-  }, [sweepingRequest, onSweepingHandled]);
+  }, [sweepingRequest, onSweepingHandled]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Build the calendar grid
   const firstDay = new Date(viewYear, viewMonth, 1).getDay();
@@ -289,9 +505,10 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       startIdx < PLANNER_HOURS.length - 1
         ? PLANNER_HOURS[startIdx + 1]
         : PLANNER_HOURS[startIdx];
-    setModal({ ...EMPTY_MODAL, date: selectedDate, timeSlot, endTimeSlot });
+    setModal({ ...EMPTY_MODAL, date: selectedDate, timeSlot, endTimeSlot, email: gcalUser?.email ?? '' });
     setSubmitted(false);
     setErrors({});
+    setGcalSyncStatus('idle');
   }
 
   function openModalForEdit(ev: ScheduledEvent) {
@@ -314,9 +531,16 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     });
     setSubmitted(false);
     setErrors({});
+    setGcalSyncStatus('idle');
   }
 
   function deleteEvent(id: string) {
+    if (gcalToken) {
+      const ev = events.find((e) => e.id === id);
+      if (ev?.gcalEventId) {
+        deleteGCalEvent(gcalToken, ev.gcalEventId).catch(() => {});
+      }
+    }
     onEventsChange((prev) => prev.filter((e) => e.id !== id));
     setModal(null);
   }
@@ -348,12 +572,14 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     return dates;
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault();
     if (!modal || !validate()) return;
 
     const dates = getRecurringDates(modal.date, modal.recurrence, modal.recurrenceCount);
-    const newEvents: ScheduledEvent[] = dates.map((date, i) => ({
+    const baseEvents: ScheduledEvent[] = dates.map((date, i) => ({
       id: i === 0 && modal.editingId ? modal.editingId : `${date}-${modal.timeSlot}-${Date.now()}-${Math.random()}`,
       date,
       name: modal.name.trim(),
@@ -363,6 +589,32 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       message: modal.message.trim(),
       ...(modal.isSweeping && { isSweeping: true, streetName: modal.streetName }),
     }));
+
+    let newEvents = baseEvents;
+
+    if (gcalToken) {
+      setSubmitting(true);
+      const editingGcalId = modal.editingId
+        ? events.find((e) => e.id === modal.editingId)?.gcalEventId
+        : undefined;
+      try {
+        let gcalIds: (string | null)[];
+        if (editingGcalId) {
+          await patchGCalEvent(gcalToken, editingGcalId, baseEvents[0]);
+          const restIds = await batchCreateGCalEvents(gcalToken, baseEvents.slice(1));
+          gcalIds = [editingGcalId, ...restIds];
+        } else {
+          gcalIds = await batchCreateGCalEvents(gcalToken, baseEvents);
+        }
+        newEvents = baseEvents.map((ev, i) =>
+          gcalIds[i] ? { ...ev, gcalEventId: gcalIds[i]! } : ev
+        );
+        setGcalSyncStatus('synced');
+      } catch {
+        setGcalSyncStatus('error');
+      }
+      setSubmitting(false);
+    }
 
     if (modal.editingId) {
       onEventsChange((prev) => {
@@ -400,10 +652,32 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     <div className="cal-page">
       <div className="cal-page-inner">
         <div className="cal-header">
-          <h1 className="cal-page-title">Schedule a Meeting</h1>
-          <p className="cal-page-subtitle">
-            Select a date to view the hourly planner, then pick a time to schedule.
-          </p>
+          <div className="cal-header-top">
+            <div>
+              <h1 className="cal-page-title">Schedule a Meeting</h1>
+              <p className="cal-page-subtitle">
+                Select a date to view the hourly planner, then pick a time to schedule.
+              </p>
+            </div>
+            <div className="gcal-auth-bar">
+              {gcalUser ? (
+                <div className="gcal-user-info">
+                  <img src={gcalUser.picture} alt={gcalUser.name} className="gcal-avatar" referrerPolicy="no-referrer" />
+                  <span className="gcal-user-name">{gcalUser.name}</span>
+                  <button
+                    className="gcal-logout-btn"
+                    onClick={() => { googleLogout(); onGcalSignOut(); }}
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <button className="gcal-sign-in-btn" onClick={() => loginWithGoogle()}>
+                  <GoogleCalendarIcon /> Sign in with Google
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         {sweepingBanner && (
@@ -604,6 +878,28 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                   )}
                   {' '}I'll confirm shortly.
                 </p>
+                {gcalUser ? (
+                  <div className="gcal-sync-status">
+                    {gcalSyncStatus === 'syncing' && <span className="sync-syncing">Syncing to Google Calendar…</span>}
+                    {gcalSyncStatus === 'synced'  && <span className="sync-success">✓ Synced to Google Calendar</span>}
+                    {gcalSyncStatus === 'error'   && <span className="sync-error">⚠ Could not sync to Google Calendar</span>}
+                  </div>
+                ) : (
+                  <a
+                    className="btn-gcal"
+                    href={buildGoogleCalendarUrl({
+                      date: modal.date,
+                      name: modal.name,
+                      timeSlot: modal.timeSlot,
+                      endTimeSlot: modal.endTimeSlot,
+                      message: modal.message,
+                    })}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <GoogleCalendarIcon /> Add to Google Calendar
+                  </a>
+                )}
                 <button className="btn-primary" onClick={() => setModal(null)}>
                   Close
                 </button>
@@ -714,8 +1010,8 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                       )}
                     </>
                   )}
-                  <button type="submit" className="btn-primary btn-full">
-                    {modal.editingId ? 'Save Changes' : 'Send Request'}
+                  <button type="submit" className="btn-primary btn-full" disabled={submitting}>
+                    {submitting ? 'Scheduling…' : modal.editingId ? 'Save Changes' : 'Send Request'}
                   </button>
                   {modal.editingId && (
                     <button
@@ -785,6 +1081,14 @@ function TrashIcon() {
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <polyline points="3 6 5 6 21 6" />
       <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+    </svg>
+  );
+}
+
+function GoogleCalendarIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.75 3H6.25A3.25 3.25 0 0 0 3 6.25v11.5A3.25 3.25 0 0 0 6.25 21h11.5A3.25 3.25 0 0 0 21 17.75V6.25A3.25 3.25 0 0 0 17.75 3zm-5.5 13.25a4.25 4.25 0 1 1 0-8.5 4.25 4.25 0 0 1 0 8.5zm0-7a2.75 2.75 0 1 0 0 5.5 2.75 2.75 0 0 0 0-5.5zM17.5 5a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
     </svg>
   );
 }
