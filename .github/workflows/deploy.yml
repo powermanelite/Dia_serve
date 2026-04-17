@@ -27,6 +27,8 @@ jobs:
       - name: Build
         run: npm run build
         working-directory: my-website
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
