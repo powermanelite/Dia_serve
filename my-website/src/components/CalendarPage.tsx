@@ -347,7 +347,37 @@ async function fetchGCalEvents(token: string): Promise<ScheduledEvent[]> {
   return result;
 }
 
+const HAS_GCAL = !!import.meta.env.VITE_GOOGLE_CLIENT_ID;
+
 interface GcalUser { name: string; email: string; picture: string; }
+
+function GcalSignInButton({
+  onSignIn,
+  onCalEventsLoad,
+}: {
+  onSignIn: (token: string, user: GcalUser) => void;
+  onCalEventsLoad: (evs: ScheduledEvent[]) => void;
+}) {
+  const login = useGoogleLogin({
+    scope: 'https://www.googleapis.com/auth/calendar.events',
+    onSuccess: async (tokenResponse) => {
+      const token = tokenResponse.access_token;
+      const [info, calEvents] = await Promise.all([
+        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${token}` },
+        }).then((r) => r.json()),
+        fetchGCalEvents(token),
+      ]);
+      onSignIn(token, { name: info.name, email: info.email, picture: info.picture });
+      onCalEventsLoad(calEvents);
+    },
+  });
+  return (
+    <button className="gcal-sign-in-btn" onClick={() => login()}>
+      <GoogleCalendarIcon /> Sign in with Google
+    </button>
+  );
+}
 
 interface CalendarPageProps {
   events: ScheduledEvent[];
@@ -374,20 +404,6 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
   // Google Calendar auth (token + user lifted to App.tsx; only sync status is local)
   const [gcalSyncStatus, setGcalSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
 
-  const loginWithGoogle = useGoogleLogin({
-    scope: 'https://www.googleapis.com/auth/calendar.events',
-    onSuccess: async (tokenResponse) => {
-      const token = tokenResponse.access_token;
-      const [info, calEvents] = await Promise.all([
-        fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${token}` },
-        }).then((r) => r.json()),
-        fetchGCalEvents(token),
-      ]);
-      onGcalSignIn(token, { name: info.name, email: info.email, picture: info.picture });
-      onEventsChange(calEvents);
-    },
-  });
 
   // Handle incoming sweeping request from Map page
   useEffect(() => {
@@ -671,11 +687,9 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                     Sign out
                   </button>
                 </div>
-              ) : (
-                <button className="gcal-sign-in-btn" onClick={() => loginWithGoogle()}>
-                  <GoogleCalendarIcon /> Sign in with Google
-                </button>
-              )}
+              ) : HAS_GCAL ? (
+                <GcalSignInButton onSignIn={onGcalSignIn} onCalEventsLoad={onEventsChange} />
+              ) : null}
             </div>
           </div>
         </div>
