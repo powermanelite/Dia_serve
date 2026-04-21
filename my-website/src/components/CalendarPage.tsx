@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 import type { ScheduledEvent, SweepingCalendarRequest } from '../types';
 import './CalendarPage.css';
@@ -65,6 +65,8 @@ interface ModalState {
   date: string;
   name: string;
   email: string;
+  schedulerEmail: string;
+  attendeeEmail: string;
   timeSlot: string;
   endTimeSlot: string;
   message: string;
@@ -78,6 +80,7 @@ interface ModalState {
 
 const EMPTY_MODAL: ModalState = {
   date: '', name: '', email: '',
+  schedulerEmail: '', attendeeEmail: 'diamond200027@gmail.com',
   timeSlot: PLANNER_HOURS[2], endTimeSlot: PLANNER_HOURS[3],
   message: '', recurrence: 'none', recurrenceCount: 4, editingId: null,
 };
@@ -218,12 +221,15 @@ function gcalBody(ev: ScheduledEvent) {
   const { hours: eh, minutes: em } = parseTimeToHHMM(endSlot);
   const [year, month, day] = ev.date.split('-').map(Number);
   const iso = (h: number, m: number) => new Date(year, month - 1, day, h, m).toISOString();
+  const attendees: { email: string }[] = [];
+  if (ev.attendeeEmail && ev.attendeeEmail !== 'N/A') attendees.push({ email: ev.attendeeEmail });
+  if (ev.schedulerEmail) attendees.push({ email: ev.schedulerEmail });
   return {
     summary: ev.name,
     description: ev.message || '',
     start: { dateTime: iso(sh, sm), timeZone: tz },
     end:   { dateTime: iso(eh, em), timeZone: tz },
-    attendees: [{ email: 'diamond200027@gmail.com' }],
+    ...(attendees.length > 0 && { attendees }),
     reminders: {
       useDefault: false,
       overrides: [{ method: 'email', minutes: 1440 }, { method: 'popup', minutes: 30 }],
@@ -263,6 +269,28 @@ async function deleteGCalEvent(token: string, gcalId: string): Promise<void> {
   });
 }
 
+function buildRRule(recurrence: Recurrence, count: number): string {
+  if (recurrence === 'none') return '';
+  const freq = recurrence === 'monthly' ? 'MONTHLY' : recurrence === 'daily' ? 'DAILY' : 'WEEKLY';
+  const interval = recurrence === 'biweekly' ? ';INTERVAL=2' : '';
+  return `RRULE:FREQ=${freq}${interval};COUNT=${count}`;
+}
+
+async function deleteGCalSeriesInstancesAfter(token: string, seriesId: string, afterDate: string): Promise<void> {
+  const params = new URLSearchParams({
+    timeMin: new Date(afterDate + 'T00:00:01').toISOString(),
+    singleEvents: 'true',
+    maxResults: '500',
+  });
+  const res = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events/${seriesId}/instances?${params}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (!res.ok) return;
+  const data = await res.json();
+  await Promise.all((data.items ?? []).map((item: { id: string }) => deleteGCalEvent(token, item.id).catch(() => {})));
+}
+
 async function fetchExistingGCalSweepIds(token: string, street: string): Promise<string[]> {
   const year = new Date().getFullYear();
   const params = new URLSearchParams({
@@ -279,7 +307,11 @@ async function fetchExistingGCalSweepIds(token: string, street: string): Promise
   );
   if (!res.ok) return [];
   const data = await res.json();
-  return (data.items ?? []).map((item: { id: string }) => item.id);
+  const ids = new Set<string>();
+  for (const item of data.items ?? []) {
+    ids.add(((item as { recurringEventId?: string; id: string }).recurringEventId ?? item.id));
+  }
+  return [...ids];
 }
 
 async function batchCreateGCalEvents(
@@ -341,6 +373,7 @@ async function fetchGCalEvents(token: string): Promise<ScheduledEvent[]> {
       endTimeSlot: endTimeSlot !== timeSlot ? endTimeSlot : undefined,
       message: item.description ?? '',
       gcalEventId: item.id as string,
+      ...(item.recurringEventId && { recurringEventId: item.recurringEventId as string }),
       ...(isSweeping && { isSweeping: true, streetName: priv.streetName || undefined }),
     });
   }
@@ -416,9 +449,32 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
   const [gcalSyncStatus, setGcalSyncStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
 
 
+  // Prevents StrictMode double-invocation from creating duplicate GCal events
+  const handledSweepingRef = useRef<typeof sweepingRequest>(null);
+
+  // Sync unsynced local events to GCal on first sign-in
+  const prevGcalTokenRef = useRef<string | null>(null);
+  const eventsRef = useRef(events);
+  useEffect(() => { eventsRef.current = events; }, [events]);
+  useEffect(() => {
+    if (!gcalToken || prevGcalTokenRef.current === gcalToken) return;
+    prevGcalTokenRef.current = gcalToken;
+    const unsynced = eventsRef.current.filter((e) => !e.gcalEventId && !e.recurringEventId && !e.isSweeping);
+    if (unsynced.length === 0) return;
+    (async () => {
+      const ids = await batchCreateGCalEvents(gcalToken, unsynced);
+      onEventsChange((prev) => prev.map((ev) => {
+        const idx = unsynced.findIndex((u) => u.id === ev.id);
+        return idx !== -1 && ids[idx] ? { ...ev, gcalEventId: ids[idx]! } : ev;
+      }));
+    })();
+  }, [gcalToken]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Handle incoming sweeping request from Map page
   useEffect(() => {
     if (!sweepingRequest) return;
+    if (handledSweepingRef.current === sweepingRequest) return;
+    handledSweepingRef.current = sweepingRequest;
 
     const newEvents: ScheduledEvent[] = [];
 
@@ -468,12 +524,40 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
           try {
             const existingIds = await fetchExistingGCalSweepIds(token, street);
             await Promise.all(existingIds.map((id) => deleteGCalEvent(token, id).catch(() => {})));
-            const gcalIds = await batchCreateGCalEvents(token, newEvents);
+
+            // Group by day-of-week + timeSlot → one weekly RRULE series per group
+            const byGroup = new Map<string, ScheduledEvent[]>();
+            for (const ev of newEvents) {
+              const dow = new Date(ev.date + 'T00:00:00').getDay();
+              const key = `${dow}-${ev.timeSlot}`;
+              (byGroup.get(key) ?? (byGroup.set(key, []), byGroup.get(key)!)).push(ev);
+            }
+
+            const idUpdates = new Map<string, Partial<ScheduledEvent>>();
+            for (const group of byGroup.values()) {
+              group.sort((a, b) => a.date.localeCompare(b.date));
+              const firstEv = group[0];
+              const seriesBody = { ...gcalBody(firstEv), recurrence: [`RRULE:FREQ=WEEKLY;COUNT=${group.length}`] };
+              const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+                method: 'POST',
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(seriesBody),
+              });
+              if (res.ok) {
+                const seriesId = ((await res.json()) as { id: string }).id;
+                for (const ev of group) {
+                  idUpdates.set(ev.id, {
+                    recurringEventId: seriesId,
+                    ...(ev.id === firstEv.id && { gcalEventId: seriesId }),
+                  });
+                }
+              }
+            }
+
             onEventsChange((prev) =>
               prev.map((ev) => {
-                const idx = newEvents.findIndex((ne) => ne.id === ev.id);
-                if (idx !== -1 && gcalIds[idx]) return { ...ev, gcalEventId: gcalIds[idx]! };
-                return ev;
+                const update = idUpdates.get(ev.id);
+                return update ? { ...ev, ...update } : ev;
               })
             );
             setSweepingBanner(`✓ Scheduled ${newEvents.length} sweeping events for ${street} to Google Calendar`);
@@ -532,7 +616,7 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       startIdx < PLANNER_HOURS.length - 1
         ? PLANNER_HOURS[startIdx + 1]
         : PLANNER_HOURS[startIdx];
-    setModal({ ...EMPTY_MODAL, date: selectedDate, timeSlot, endTimeSlot, email: gcalUser?.email ?? '' });
+    setModal({ ...EMPTY_MODAL, date: selectedDate, timeSlot, endTimeSlot, schedulerEmail: gcalUser?.email ?? '' });
     setSubmitted(false);
     setErrors({});
     setGcalSyncStatus('idle');
@@ -547,6 +631,8 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
       date: ev.date,
       name: ev.name,
       email: ev.email,
+      schedulerEmail: ev.schedulerEmail ?? gcalUser?.email ?? '',
+      attendeeEmail: ev.attendeeEmail ?? 'diamond200027@gmail.com',
       timeSlot: ev.timeSlot,
       endTimeSlot: defaultEnd,
       message: ev.message,
@@ -562,13 +648,21 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
   }
 
   function deleteEvent(id: string) {
-    if (gcalToken) {
-      const ev = events.find((e) => e.id === id);
-      if (ev?.gcalEventId) {
+    const ev = events.find((e) => e.id === id);
+    if (gcalToken && ev) {
+      if (ev.recurringEventId) {
+        // Delete the entire GCal series
+        deleteGCalEvent(gcalToken, ev.recurringEventId).catch(() => {});
+      } else if (ev.gcalEventId) {
         deleteGCalEvent(gcalToken, ev.gcalEventId).catch(() => {});
       }
     }
-    onEventsChange((prev) => prev.filter((e) => e.id !== id));
+    const recurringId = ev?.recurringEventId;
+    onEventsChange((prev) =>
+      recurringId
+        ? prev.filter((e) => e.recurringEventId !== recurringId)
+        : prev.filter((e) => e.id !== id)
+    );
     setModal(null);
   }
 
@@ -576,8 +670,6 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     const e: Partial<ModalState> = {};
     if (!modal) return false;
     if (!modal.name.trim()) e.name = 'Name is required';
-    if (!modal.email.trim()) e.email = modal.isSweeping ? 'An email address is required to save street sweeping events' : 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(modal.email)) e.email = 'Invalid email address';
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -606,15 +698,19 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     if (!modal || !validate()) return;
 
     const dates = getRecurringDates(modal.date, modal.recurrence, modal.recurrenceCount);
+    const originalEvent = modal.editingId ? events.find((e) => e.id === modal.editingId) : undefined;
     const baseEvents: ScheduledEvent[] = dates.map((date, i) => ({
       id: i === 0 && modal.editingId ? modal.editingId : `${date}-${modal.timeSlot}-${Date.now()}-${Math.random()}`,
       date,
       name: modal.name.trim(),
       email: modal.email.trim(),
+      schedulerEmail: modal.schedulerEmail.trim() || undefined,
+      attendeeEmail: modal.attendeeEmail,
       timeSlot: modal.timeSlot,
       endTimeSlot: modal.endTimeSlot !== modal.timeSlot ? modal.endTimeSlot : undefined,
       message: modal.message.trim(),
       ...(modal.isSweeping && { isSweeping: true, streetName: modal.streetName }),
+      ...(originalEvent?.recurringEventId && { recurringEventId: originalEvent.recurringEventId }),
     }));
 
     let newEvents = baseEvents;
@@ -622,20 +718,54 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     if (gcalToken) {
       setSubmitting(true);
       const editingGcalId = modal.editingId
-        ? events.find((e) => e.id === modal.editingId)?.gcalEventId
+        ? (events.find((e) => e.id === modal.editingId)?.gcalEventId
+          ?? events.find((e) => e.id === modal.editingId)?.recurringEventId)
         : undefined;
       try {
-        let gcalIds: (string | null)[];
+        // Delete future recurring events from Google Calendar before patching
+        if (modal.stopRepeat) {
+          const editedEvent = events.find((e) => e.id === modal.editingId);
+          const seriesId = editedEvent?.recurringEventId;
+          if (seriesId) {
+            await deleteGCalSeriesInstancesAfter(gcalToken, seriesId, modal.date).catch(() => {});
+          } else if (modal.streetName) {
+            // Sweeping: delete future instances from each series for this street
+            const future = events.filter((e) => e.isSweeping && e.streetName === modal.streetName && e.date > modal.date);
+            const seriesIds = [...new Set(future.filter((e) => e.recurringEventId).map((e) => e.recurringEventId!))];
+            const individualIds = future.filter((e) => !e.recurringEventId && e.gcalEventId).map((e) => e.gcalEventId!);
+            await Promise.all([
+              ...seriesIds.map((sid) => deleteGCalSeriesInstancesAfter(gcalToken, sid, modal.date).catch(() => {})),
+              ...individualIds.map((id) => deleteGCalEvent(gcalToken, id).catch(() => {})),
+            ]);
+          } else {
+            const toCancel = events.filter((e) => !e.isSweeping && e.name === modal.name.trim() && e.timeSlot === modal.timeSlot && e.date > modal.date && e.gcalEventId);
+            await Promise.all(toCancel.map((e) => deleteGCalEvent(gcalToken, e.gcalEventId!).catch(() => {})));
+          }
+        }
+
         if (editingGcalId) {
           await patchGCalEvent(gcalToken, editingGcalId, baseEvents[0]);
           const restIds = await batchCreateGCalEvents(gcalToken, baseEvents.slice(1));
-          gcalIds = [editingGcalId, ...restIds];
+          const gcalIds = [editingGcalId, ...restIds];
+          newEvents = baseEvents.map((ev, i) => gcalIds[i] ? { ...ev, gcalEventId: gcalIds[i]! } : ev);
+        } else if (modal.recurrence !== 'none' && !modal.isSweeping) {
+          // Create a true GCal recurring series with RRULE
+          const seriesBody = { ...gcalBody(baseEvents[0]), recurrence: [buildRRule(modal.recurrence, modal.recurrenceCount)] };
+          const res = await fetch('https://www.googleapis.com/calendar/v3/calendars/primary/events', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${gcalToken}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(seriesBody),
+          });
+          if (res.ok) {
+            const seriesData = await res.json();
+            const seriesId = seriesData.id as string;
+            newEvents = baseEvents.map((ev) => ({ ...ev, recurringEventId: seriesId }));
+            newEvents[0] = { ...newEvents[0], gcalEventId: seriesId };
+          }
         } else {
-          gcalIds = await batchCreateGCalEvents(gcalToken, baseEvents);
+          const gcalIds = await batchCreateGCalEvents(gcalToken, baseEvents);
+          newEvents = baseEvents.map((ev, i) => gcalIds[i] ? { ...ev, gcalEventId: gcalIds[i]! } : ev);
         }
-        newEvents = baseEvents.map((ev, i) =>
-          gcalIds[i] ? { ...ev, gcalEventId: gcalIds[i]! } : ev
-        );
         setGcalSyncStatus('synced');
       } catch {
         setGcalSyncStatus('error');
@@ -646,10 +776,10 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
     if (modal.editingId) {
       onEventsChange((prev) => {
         let updated = prev.filter((ev) => ev.id !== modal.editingId);
-        if (modal.stopRepeat && modal.streetName) {
-          updated = updated.filter(
-            (e) => !(e.isSweeping && e.streetName === modal.streetName && e.timeSlot === modal.timeSlot && e.date > modal.date)
-          );
+        if (modal.stopRepeat) {
+          updated = modal.streetName
+            ? updated.filter((e) => !(e.isSweeping && e.streetName === modal.streetName && e.date > modal.date))
+            : updated.filter((e) => !(!e.isSweeping && e.name === modal.name.trim() && e.timeSlot === modal.timeSlot && e.date > modal.date));
         }
         return [...updated, ...newEvents];
       });
@@ -699,7 +829,16 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                   </button>
                 </div>
               ) : HAS_GCAL ? (
-                <GcalSignInButton onSignIn={onGcalSignIn} onCalEventsLoad={onEventsChange} />
+                <GcalSignInButton
+                  onSignIn={onGcalSignIn}
+                  onCalEventsLoad={(calEvents) => {
+                    onEventsChange((prev) => {
+                      // Keep local events not yet synced to GCal
+                      const unsynced = prev.filter((e) => !e.gcalEventId && !e.recurringEventId);
+                      return [...unsynced, ...calEvents];
+                    });
+                  }}
+                />
               ) : null}
             </div>
           </div>
@@ -950,18 +1089,30 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                     />
                     {errors.name && <span className="form-error">{errors.name}</span>}
                   </div>
+                  {!modal.isSweeping && (
                   <div className="form-row">
-                    <label className="form-label">Email Address *</label>
+                    <label className="form-label">Attendee Email</label>
+                    <select
+                      className="form-input"
+                      value={modal.attendeeEmail}
+                      onChange={(e) => setModal({ ...modal, attendeeEmail: e.target.value })}
+                    >
+                      <option value="diamond200027@gmail.com">diamond200027@gmail.com</option>
+                      <option value="N/A">N/A</option>
+                    </select>
+                  </div>
+                  )}
+                  <div className="form-row">
+                    <label className="form-label">Scheduler's Email</label>
                     <input
-                      className={`form-input${errors.email ? ' form-input--error' : ''}`}
+                      className="form-input"
                       type="email"
-                      placeholder="jane@example.com"
-                      value={modal.email}
-                      onChange={(e) => setModal({ ...modal, email: e.target.value })}
+                      placeholder={gcalUser ? gcalUser.email : 'Sign in with Google to auto-fill'}
+                      value={modal.schedulerEmail}
+                      onChange={(e) => setModal({ ...modal, schedulerEmail: e.target.value })}
                     />
-                    {errors.email && <span className="form-error">{errors.email}</span>}
-                    {modal.isSweeping && !errors.email && (
-                      <span className="form-hint">Required — used to send sweeping reminders.</span>
+                    {gcalUser && modal.schedulerEmail && (
+                      <span className="form-hint">Auto-filled from your Google account.</span>
                     )}
                   </div>
                   <div className="form-row">
@@ -1002,35 +1153,51 @@ function CalendarPage({ events, onEventsChange, sweepingRequest, onSweepingHandl
                     </div>
                   ) : (
                     <>
-                      <div className="form-row">
-                        <label className="form-label">Repeat</label>
-                        <select
-                          className="form-input"
-                          value={modal.recurrence}
-                          onChange={(e) => setModal({ ...modal, recurrence: e.target.value as Recurrence })}
-                        >
-                          {RECURRENCE_OPTIONS.map((opt) => (
-                            <option key={opt.value} value={opt.value}>{opt.label}</option>
-                          ))}
-                        </select>
-                      </div>
-                      {modal.recurrence !== 'none' && (
+                      {!modal.editingId && (
+                        <>
+                          <div className="form-row">
+                            <label className="form-label">Repeat</label>
+                            <select
+                              className="form-input"
+                              value={modal.recurrence}
+                              onChange={(e) => setModal({ ...modal, recurrence: e.target.value as Recurrence })}
+                            >
+                              {RECURRENCE_OPTIONS.map((opt) => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                          </div>
+                          {modal.recurrence !== 'none' && (
+                            <div className="form-row">
+                              <label className="form-label">Number of occurrences</label>
+                              <input
+                                className="form-input"
+                                type="number"
+                                min={2}
+                                max={52}
+                                value={modal.recurrenceCount}
+                                onChange={(e) => setModal({ ...modal, recurrenceCount: Math.max(2, Math.min(52, Number(e.target.value))) })}
+                              />
+                              <span className="form-hint">
+                                {modal.recurrence === 'daily' && `${modal.recurrenceCount} days`}
+                                {modal.recurrence === 'weekly' && `${modal.recurrenceCount} weeks`}
+                                {modal.recurrence === 'biweekly' && `${modal.recurrenceCount * 2} weeks`}
+                                {modal.recurrence === 'monthly' && `${modal.recurrenceCount} months`}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                      {modal.editingId && (
                         <div className="form-row">
-                          <label className="form-label">Number of occurrences</label>
-                          <input
-                            className="form-input"
-                            type="number"
-                            min={2}
-                            max={52}
-                            value={modal.recurrenceCount}
-                            onChange={(e) => setModal({ ...modal, recurrenceCount: Math.max(2, Math.min(52, Number(e.target.value))) })}
-                          />
-                          <span className="form-hint">
-                            {modal.recurrence === 'daily' && `${modal.recurrenceCount} days`}
-                            {modal.recurrence === 'weekly' && `${modal.recurrenceCount} weeks`}
-                            {modal.recurrence === 'biweekly' && `${modal.recurrenceCount * 2} weeks`}
-                            {modal.recurrence === 'monthly' && `${modal.recurrenceCount} months`}
-                          </span>
+                          <label className="recurrence-option">
+                            <input
+                              type="checkbox"
+                              checked={!!modal.stopRepeat}
+                              onChange={() => setModal({ ...modal, stopRepeat: !modal.stopRepeat })}
+                            />
+                            Stop repeating after this date
+                          </label>
                         </div>
                       )}
                     </>

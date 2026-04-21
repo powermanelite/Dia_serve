@@ -5,12 +5,15 @@ export interface ScheduledEvent {
   date: string; // YYYY-MM-DD
   name: string;
   email: string;
+  schedulerEmail?: string;
+  attendeeEmail?: string;
   timeSlot: string;    // start time
   endTimeSlot?: string; // end time (exclusive); defaults to 1 hour after start
   message: string;
   isSweeping?: boolean;
   streetName?: string;
   gcalEventId?: string;
+  recurringEventId?: string;
 }
 
 export interface SweepingCalendarRequest {
