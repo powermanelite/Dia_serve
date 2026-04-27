@@ -24,6 +24,15 @@ jobs:
         run: npm install
         working-directory: my-website
 
+      - name: Verify required secrets
+        run: |
+          if [ -z "${VITE_GOOGLE_CLIENT_ID}" ]; then
+            echo "::error::VITE_GOOGLE_CLIENT_ID secret is not set — add it under Repository secrets in GitHub settings"
+            exit 1
+          fi
+        env:
+          VITE_GOOGLE_CLIENT_ID: ${{ secrets.VITE_GOOGLE_CLIENT_ID }}
+
       - name: Build
         run: npm run build
         working-directory: my-website
